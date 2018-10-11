@@ -1,0 +1,117 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Black">
+
+    <TextView
+        android:id="@+id/texttime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/White"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/gridLayout4"
+        app:layout_constraintStart_toEndOf="@+id/gridLayout3" />
+
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/gridLayout3"
+        android:layout_width="170sp"
+        android:layout_height="match_parent"
+        app:columnCount="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/ltbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@drawable/ltbutton_anim"
+            android:gravity="left"
+            android:text=""
+            android:textColor="@color/White"
+            android:textSize="28sp"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/lbbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@drawable/lbbutton2"
+            android:gravity="left|bottom"
+            android:text="музыка"
+            android:textColor="@color/OrangePressed"
+            android:textSize="28sp"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1" />
+    </android.support.v7.widget.GridLayout>
+
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/gridLayout4"
+        android:layout_width="170sp"
+        android:layout_height="match_parent"
+        app:columnCount="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/rtbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@drawable/rtbutton_anim"
+            android:gravity="right"
+            android:text=""
+            android:textColor="@color/White"
+            android:textSize="28sp"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/rbbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@drawable/rbbutton_anim"
+            android:gravity="right|bottom"
+            android:text=""
+            android:textColor="@color/White"
+            android:textSize="28sp"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1" />
+
+    </android.support.v7.widget.GridLayout>
+
+    <ImageView
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@+id/texttime"
+        app:layout_constraintEnd_toEndOf="@+id/gridLayout4"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/gridLayout3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/menuanim" />
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        app:layout_constraintBottom_toTopOf="@+id/texttime"
+        app:layout_constraintEnd_toStartOf="@+id/gridLayout4"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/gridLayout3"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

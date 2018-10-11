@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Android MMI Launcher</string>
+    <string name="title_activity_mainmenu">Mainmenu</string>
+    <string name="ticker_text">123</string>
+</resources>

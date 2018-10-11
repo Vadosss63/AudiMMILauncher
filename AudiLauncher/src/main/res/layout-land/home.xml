@@ -1,0 +1,103 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Black">
+
+    <TextView
+        android:id="@+id/texttime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/White"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/gridLayout2"
+        app:layout_constraintStart_toEndOf="@+id/gridLayout" />
+
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="170sp"
+        android:layout_height="match_parent"
+        app:columnCount="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/ltbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@drawable/ltbutton_anim"
+            android:gravity="left"
+            android:text="браузер"
+            android:textColor="@color/buttontext"
+            android:textSize="28sp"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/lbbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@drawable/lbbutton_anim"
+            android:gravity="left|bottom"
+            android:text="музыка"
+            android:textColor="@color/buttontext"
+            android:textSize="28sp"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1" />
+    </android.support.v7.widget.GridLayout>
+
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/gridLayout2"
+        android:layout_width="170sp"
+        android:layout_height="match_parent"
+        app:columnCount="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/rtbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@drawable/rtbutton_anim"
+            android:gravity="right"
+            android:text="меню"
+            android:textColor="@color/buttontext"
+            android:textSize="28sp"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1" />
+
+        <Button
+            android:id="@+id/rbbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@drawable/rbbutton_anim"
+            android:gravity="right|bottom"
+            android:text="карты"
+            android:textColor="@color/buttontext"
+            android:textSize="28sp"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1" />
+
+    </android.support.v7.widget.GridLayout>
+
+    <ImageView
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@+id/texttime"
+        app:layout_constraintEnd_toEndOf="@+id/gridLayout2"
+        app:layout_constraintStart_toStartOf="@+id/gridLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/menuanim" />
+
+</android.support.constraint.ConstraintLayout>
+
+
