@@ -155,7 +155,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener
     {
         ImageView view = findViewById(R.id.view);
         view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim2));
-        Intent intent = new Intent(this, Mainmenu.class);
+        Intent intent = new Intent(this, ApplicationsMenu.class);
         startActivity(intent);
         finish();
         overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);

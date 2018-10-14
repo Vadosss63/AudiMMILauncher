@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class Mainmenu extends AppCompatActivity implements View.OnClickListener
+public class ApplicationsMenu extends AppCompatActivity implements View.OnClickListener
 {
     private Time m_time;
     private Handler m_handler;
@@ -43,7 +43,7 @@ public class Mainmenu extends AppCompatActivity implements View.OnClickListener
 
         LoadApps();
         LoadListView();
-        addClickListener();
+        AddClickListener();
 
         SetDecorView();
         ImageView view = findViewById(R.id.view);
@@ -210,14 +210,15 @@ public class Mainmenu extends AppCompatActivity implements View.OnClickListener
         m_listAdapters.setAdapter(adapter);
     }
 
-    private void addClickListener()
+    private void AddClickListener()
     {
-        m_listAdapters.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        m_listAdapters.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> av, View v, int pos,
-                                    long id) {
+            public void onItemClick(AdapterView<?> av, View v, int pos, long id)
+            {
                 Intent i = m_packageManager.getLaunchIntentForPackage(m_apps.get(pos).name.toString());
-                Mainmenu.this.startActivity(i);
+                ApplicationsMenu.this.startActivity(i);
             }
         });
     }

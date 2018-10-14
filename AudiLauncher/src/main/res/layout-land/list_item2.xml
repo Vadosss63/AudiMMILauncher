@@ -1,7 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/textViewContent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="30dp"
-    android:textColor="@color/OrangePressed"
-    android:textSize="23sp" />
+    android:layout_height="match_parent"
+    android:background="@null"
+    tools:ignore="MissingDefaultResource"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/TrackSelected"
+        android:layout_width="40dp"
+        android:layout_height="28dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:src="@drawable/menupressed_anim" />
+
+    <TextView
+        android:id="@+id/textViewContent"
+        android:layout_width="340dp"
+        android:layout_height="28dp"
+        android:textColor="@color/state_selector"
+        android:textSize="23sp" />
+
+    <TextView
+        android:id="@+id/TrackTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/White"
+        android:textSize="23sp"
+        android:text="00:00" />
+
+</LinearLayout>

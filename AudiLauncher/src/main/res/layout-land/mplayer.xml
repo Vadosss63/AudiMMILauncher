@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/Black">
+    android:background="@color/Black"
+    tools:ignore="MissingDefaultResource">
 
     <TextView
         android:id="@+id/texttime"
@@ -101,17 +102,19 @@
         app:srcCompat="@drawable/menuanim" />
 
     <ListView
-        android:id="@android:id/list"
+
+        android:id="@+id/PlayList"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="30dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginStart="80dp"
         android:layout_marginTop="64dp"
+        android:choiceMode="singleChoice"
         app:layout_constraintBottom_toTopOf="@+id/texttime"
-        app:layout_constraintEnd_toStartOf="@+id/gridLayout4"
+        app:layout_constraintEnd_toEndOf="@+id/gridLayout4"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/gridLayout3"
+        app:layout_constraintStart_toStartOf="@+id/gridLayout3"
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

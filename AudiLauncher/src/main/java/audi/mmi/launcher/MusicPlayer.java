@@ -1,5 +1,6 @@
 package audi.mmi.launcher;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -10,9 +11,12 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -25,7 +29,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class MusicPlayer extends ListActivity implements View.OnClickListener, OnCompletionListener {
+public class MusicPlayer extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, OnCompletionListener {
 
     // текущие время
     private Time m_Time;
@@ -37,60 +41,82 @@ public class MusicPlayer extends ListActivity implements View.OnClickListener, O
     // список отображения
     private List<String> m_pathList = null;
     private String m_dirRoot = "/"; // символ для корневого элемента
-    // плеер для воспроизведения
-    private MediaPlayer m_mediaPlayer;
+
     // текущий трек
     private String m_dirAudioTrack;
     // Текущий номер дорожки в списке
-    private int m_currentIndexAudioTrack;
+    private int m_currentIndexAudioTrack = -1;
     //  плаер для воспроизведения
     private MPlayer m_MPlayer;
+    // список востроизведения
+    private ListView m_playList;
+    ArrayAdapter<String> m_adapterPlayList;
+    List<String> itemList = new ArrayList();
+    // время воспроизведения
+    TextView m_playTime = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.mplayer);
+
+        m_playList = (ListView) findViewById(R.id.PlayList);
+        // Можно выводить на экран список
+        m_adapterPlayList = new ArrayAdapter<String>(this, R.layout.list_item2, itemList)
+        {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent)
+            {
+                if(convertView == null)
+                    convertView = getLayoutInflater().inflate(R.layout.list_item2, null);
+
+                TextView trackLabel = (TextView)convertView.findViewById(R.id.textViewContent);
+                trackLabel.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
+                trackLabel.setText(itemList.get(position));
+                ImageView imageView = (ImageView)convertView.findViewById(R.id.TrackSelected);
+                TextView trackTime = (TextView)convertView.findViewById(R.id.TrackTime);
+                trackTime.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
+
+
+                if(m_dirAudioTrack == m_pathList.get(position))
+                {
+                    imageView.setSelected(true);
+                    trackLabel.setSelected(true);
+                    trackTime.setSelected(true);
+                    m_playTime = trackTime;
+
+                }
+                else
+                {
+                    imageView.setSelected(false);
+                    trackLabel.setSelected(false);
+                    trackTime.setSelected(false);
+                    trackTime.setText("");
+                }
+                return convertView;
+            }
+        };
+
+        m_playList.setAdapter(m_adapterPlayList);
+        m_playList.setOnItemClickListener(this);
+
         m_dirRoot = Environment.getExternalStorageDirectory().getPath();
         getDir(m_dirRoot); // выводим список файлов и папок в корневой папке системы
 
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        SetDecorView();
         ImageView view = findViewById(R.id.view);
         view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim));
 
         m_Time = new Time();
 
-        m_runnable = new Runnable() {
-            @Override
-            public void run() {
-                m_Time.setToNow();
-                m_hours = m_Time.hour;
-                m_minutes = m_Time.minute;
-                TextView myText = (TextView) findViewById(R.id.texttime);
-                myText.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
-                String timetext = String.format("%02d:%02d", m_hours, m_minutes);
-                myText.setText(timetext);
-                m_handler.postDelayed(m_runnable, 900);
-            }
-        };
+        CreateTime();
 
-        m_runnable2 = new Runnable() {
+        m_runnable2 = new Runnable()
+        {
             @Override
             public void run() {
-                View decorView = getWindow().getDecorView();
-                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+                SetDecorView();
                 m_handler.postDelayed(m_runnable2, 4000);
             }
         };
@@ -99,6 +125,14 @@ public class MusicPlayer extends ListActivity implements View.OnClickListener, O
         m_handler.post(m_runnable);
         m_handler.postDelayed(m_runnable2, 100);
 
+        CreateButtons();
+
+        m_MPlayer = new MPlayer();
+        m_MPlayer.RegisterPlayer(this);
+    }
+
+    private void CreateButtons()
+    {
         Button ltbutton = findViewById(R.id.ltbutton);
         ltbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
         Button lbbutton = findViewById(R.id.lbbutton);
@@ -108,42 +142,85 @@ public class MusicPlayer extends ListActivity implements View.OnClickListener, O
         Button rbbutton = findViewById(R.id.rbbutton);
         rbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
         lbbutton.setOnClickListener(this);
-
-        m_MPlayer = new MPlayer();
-        m_MPlayer.RegisterPlayer(this);
     }
+
+    private void CreateTime()
+    {
+        m_runnable = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                m_Time.setToNow();
+                m_hours = m_Time.hour;
+                m_minutes = m_Time.minute;
+                int second = m_Time.second;
+                TextView myText = (TextView) findViewById(R.id.texttime);
+                myText.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
+                String timeText;
+                if((second % 2) == 1)
+                    timeText = String.format("%02d %02d", m_hours, m_minutes);
+                else
+                    timeText = String.format("%02d:%02d", m_hours, m_minutes);
+
+                myText.setText(timeText);
+                if(m_playTime != null)
+                {
+                    if(m_playTime.isSelected())
+                    {
+                       m_playTime.setText(m_MPlayer.GetCurrentTimePlay());
+                    }
+                }
+                m_handler.postDelayed(m_runnable, 900);
+            }
+        };
+    }
+
+    private void SetDecorView()
+    {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility
+                ( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
+
     // действие приповторном нажании на кнопку
     @Override
     public void onClick(View v)
     {
-        switch (v.getId())
-        {
-            case R.id.lbbutton:
-                ImageView view = findViewById(R.id.view);
-                view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim2));
+        if(v.getId() != R.id.lbbutton)
+            return;
 
-                Intent intent = new Intent(this, Home.class);
-                if (m_mediaPlayer != null)
-                   m_mediaPlayer.release();
-
-                finish();
-                startActivity(intent);
-                overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);
-                break;
-            default:
-                break;
-        }
+        BackToHome();
     }
-    @Override
-    public void onBackPressed()
+
+    private void StartAnimation()
     {
         ImageView view = findViewById(R.id.view);
         view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim2));
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if(m_pathList.isEmpty())
+        {
+            BackToHome();
+        }
+        else
+        {
+            getDir(m_pathList.get(1));
+        }
+    }
+
+    private void BackToHome()
+    {
+        StartAnimation();
         Intent intent = new Intent(this, Home.class);
-
-        if (m_mediaPlayer != null)
-            m_mediaPlayer.release();
-
         finish();
         startActivity(intent);
         overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);
@@ -151,10 +228,11 @@ public class MusicPlayer extends ListActivity implements View.OnClickListener, O
 
     private void getDir(String dirPath)
     {
-        List<String> itemList = new ArrayList<>();
+        itemList = new ArrayList<>();
         m_pathList = new ArrayList<>();
         File file = new File(dirPath);
-        File[] filesArray = file.listFiles(); // получаем список файлов
+        File[] filesArray = file.listFiles();
+        // получаем список файлов
 
         // если мы не в корневой папке
         if (!dirPath.equals(m_dirRoot))
@@ -187,9 +265,9 @@ public class MusicPlayer extends ListActivity implements View.OnClickListener, O
                 }
         }
 
-        // Можно выводить на экран список
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_item2, itemList);
-        setListAdapter(adapter);
+        m_adapterPlayList.clear();
+        m_adapterPlayList.addAll(itemList);
+        m_adapterPlayList.notifyDataSetChanged();
     }
 
     // Компоратор для сортировки дерикторий музыкальных треков
@@ -209,23 +287,16 @@ public class MusicPlayer extends ListActivity implements View.OnClickListener, O
         }
     };
 
-    @Override
-    // Событие нажатия на элемент
-    protected void onListItemClick(ListView l, View v, int position, long id)
-    {
-        super.onListItemClick(l, v, position, id);
-        // обработка нажатий на элементах списка
-        m_currentIndexAudioTrack = position;
-        Play(position);
-    }
-
     // Воспроизведение песни
     private void Play(int position)
     {
+        m_playList.smoothScrollToPosition(position);
+        m_adapterPlayList.notifyDataSetChanged();
         // пока у нас есть треки мы их воспроизводим
         File file = new File(m_pathList.get(position));
-        if(CheckTypeFile(file))
+        if(CheckTypeFile(file)) {
             PlayMusic(file);
+        }
     }
 
     // Проверяем файл песни
@@ -250,6 +321,7 @@ public class MusicPlayer extends ListActivity implements View.OnClickListener, O
         // если элемент списка является файлом, то выводим его имя
         m_dirAudioTrack = file.getAbsolutePath();
         m_MPlayer.StartPlayer(m_dirAudioTrack);
+
     }
 
     // Сообщение об ошибке чтения файла
@@ -273,6 +345,14 @@ public class MusicPlayer extends ListActivity implements View.OnClickListener, O
     {
         // пытаемся воспроизвести следующий трек
         m_currentIndexAudioTrack++;
+        Play(m_currentIndexAudioTrack);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+    {
+        m_currentIndexAudioTrack  = position;
+        // обработка нажатий на элементах списка
         Play(m_currentIndexAudioTrack);
     }
 }
