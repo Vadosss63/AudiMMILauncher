@@ -1,8 +1,6 @@
 package audi.mmi.launcher;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -129,6 +127,10 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
 
         m_MPlayer = new MPlayer();
         m_MPlayer.RegisterPlayer(this);
+
+//        String dirPath = m_dirRoot + "/Music";
+//        MusicFiles musicFiles = new MusicFiles(dirPath);
+
     }
 
     private void CreateButtons()
@@ -168,7 +170,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
                 {
                     if(m_playTime.isSelected())
                     {
-                       m_playTime.setText(m_MPlayer.GetCurrentTimePlay());
+                        m_playTime.setText(m_MPlayer.GetCurrentTimePlay());
                     }
                 }
                 m_handler.postDelayed(m_runnable, 900);
@@ -181,12 +183,13 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility
                 ( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
+
 
     // действие приповторном нажании на кнопку
     @Override
@@ -208,13 +211,9 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
     public void onBackPressed()
     {
         if(m_pathList.isEmpty())
-        {
             BackToHome();
-        }
         else
-        {
-            getDir(m_pathList.get(1));
-        }
+            getDir(m_pathList.get(0));
     }
 
     private void BackToHome()
@@ -228,18 +227,18 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
 
     private void getDir(String dirPath)
     {
-        itemList = new ArrayList<>();
-        m_pathList = new ArrayList<>();
         File file = new File(dirPath);
         File[] filesArray = file.listFiles();
         // получаем список файлов
-
+        itemList = new ArrayList<>();
+        m_pathList = new ArrayList<>();
         // если мы не в корневой папке
         if (!dirPath.equals(m_dirRoot))
         {
             itemList.add(m_dirRoot);
-            m_pathList.add(m_dirRoot);
             itemList.add("../");
+
+            m_pathList.add(m_dirRoot);
             m_pathList.add(file.getParent());
         }
 
@@ -264,7 +263,6 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
                     itemList.add(file.getName());
                 }
         }
-
         m_adapterPlayList.clear();
         m_adapterPlayList.addAll(itemList);
         m_adapterPlayList.notifyDataSetChanged();
@@ -332,10 +330,10 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
                 .setIcon(R.mipmap.ic_launcher)
                 .setTitle(title)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which){}
-                        })
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which){}
+                })
                 .show();
     }
 
