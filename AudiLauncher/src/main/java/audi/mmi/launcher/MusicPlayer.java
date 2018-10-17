@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -48,8 +49,10 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
     private MPlayer m_MPlayer;
     // список востроизведения
     private ListView m_playList;
-    ArrayAdapter<String> m_adapterPlayList;
+    ArrayAdapter<NodeDirectory> m_adapterPlayList;
     List<String> itemList = new ArrayList();
+    // дериктория для воспроизведения
+    MusicFiles m_musicFiles;
     // время воспроизведения
     TextView m_playTime = null;
 
@@ -58,49 +61,46 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mplayer);
+//        m_playList = (ListView) findViewById(R.id.PlayList);
+//        // Можно выводить на экран список
+//        m_adapterPlayList = new ArrayAdapter<String>(this, R.layout.list_item2, itemList)
+//        {
+//            @Override
+//            public View getView(int position, View convertView, ViewGroup parent)
+//            {
+//                if(convertView == null)
+//                    convertView = getLayoutInflater().inflate(R.layout.list_item2, null);
+//
+//                TextView trackLabel = (TextView)convertView.findViewById(R.id.textViewContent);
+//                trackLabel.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
+//                trackLabel.setText(itemList.get(position));
+//                ImageView imageView = (ImageView)convertView.findViewById(R.id.TrackSelected);
+//                TextView trackTime = (TextView)convertView.findViewById(R.id.TrackTime);
+//                trackTime.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
+//
+//
+//                if(m_dirAudioTrack == m_pathList.get(position))
+//                {
+//                    imageView.setSelected(true);
+//                    trackLabel.setSelected(true);
+//                    trackTime.setSelected(true);
+//                    m_playTime = trackTime;
+//
+//                }
+//                else
+//                {
+//                    imageView.setSelected(false);
+//                    trackLabel.setSelected(false);
+//                    trackTime.setSelected(false);
+//                    trackTime.setText("");
+//                }
+//                return convertView;
+//            }
+//        };
 
-        m_playList = (ListView) findViewById(R.id.PlayList);
-        // Можно выводить на экран список
-        m_adapterPlayList = new ArrayAdapter<String>(this, R.layout.list_item2, itemList)
-        {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent)
-            {
-                if(convertView == null)
-                    convertView = getLayoutInflater().inflate(R.layout.list_item2, null);
-
-                TextView trackLabel = (TextView)convertView.findViewById(R.id.textViewContent);
-                trackLabel.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
-                trackLabel.setText(itemList.get(position));
-                ImageView imageView = (ImageView)convertView.findViewById(R.id.TrackSelected);
-                TextView trackTime = (TextView)convertView.findViewById(R.id.TrackTime);
-                trackTime.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
-
-
-                if(m_dirAudioTrack == m_pathList.get(position))
-                {
-                    imageView.setSelected(true);
-                    trackLabel.setSelected(true);
-                    trackTime.setSelected(true);
-                    m_playTime = trackTime;
-
-                }
-                else
-                {
-                    imageView.setSelected(false);
-                    trackLabel.setSelected(false);
-                    trackTime.setSelected(false);
-                    trackTime.setText("");
-                }
-                return convertView;
-            }
-        };
-
-        m_playList.setAdapter(m_adapterPlayList);
-        m_playList.setOnItemClickListener(this);
 
         m_dirRoot = Environment.getExternalStorageDirectory().getPath();
-        getDir(m_dirRoot); // выводим список файлов и папок в корневой папке системы
+//        getDir(m_dirRoot); // выводим список файлов и папок в корневой папке системы
 
         SetDecorView();
         ImageView view = findViewById(R.id.view);
@@ -128,8 +128,59 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
         m_MPlayer = new MPlayer();
         m_MPlayer.RegisterPlayer(this);
 
-//        String dirPath = m_dirRoot + "/Music";
-//        MusicFiles musicFiles = new MusicFiles(dirPath);
+        String dirPath = m_dirRoot + "/Music";
+        m_musicFiles = new MusicFiles(dirPath);
+
+//        // Количество файлов внулевой папке
+//        for(NodeDirectory nodeDirectory : m_musicFiles.GetFolders(0))
+//        {
+//          String name = nodeDirectory.GetName();
+//        }
+//        for(NodeDirectory nodeDirectory : m_musicFiles.GetTracks(1))
+//        {
+//            String name = nodeDirectory.GetName();
+//        }
+
+
+        m_playList = (ListView) findViewById(R.id.PlayList);
+        // Можно выводить на экран список
+        m_adapterPlayList = new ArrayAdapter<NodeDirectory>(this, R.layout.list_item2, m_musicFiles.GetTracks(0))
+        {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent)
+            {
+                if(convertView == null)
+                    convertView = getLayoutInflater().inflate(R.layout.list_item2, null);
+
+                TextView trackLabel = (TextView)convertView.findViewById(R.id.textViewContent);
+                trackLabel.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
+                trackLabel.setText(m_musicFiles.GetTracks(0).get(position).GetName());
+                ImageView imageView = (ImageView)convertView.findViewById(R.id.TrackSelected);
+                TextView trackTime = (TextView)convertView.findViewById(R.id.TrackTime);
+                trackTime.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
+
+
+//                if(m_dirAudioTrack == m_pathList.get(position))
+//                {
+//                    imageView.setSelected(true);
+//                    trackLabel.setSelected(true);
+//                    trackTime.setSelected(true);
+//                    m_playTime = trackTime;
+//
+//                }
+//                else
+//                {
+//                    imageView.setSelected(false);
+//                    trackLabel.setSelected(false);
+//                    trackTime.setSelected(false);
+//                    trackTime.setText("");
+//                }
+                return convertView;
+            }
+        };
+
+        m_playList.setAdapter(m_adapterPlayList);
+        m_playList.setOnItemClickListener(this);
 
     }
 
@@ -264,7 +315,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
                 }
         }
         m_adapterPlayList.clear();
-        m_adapterPlayList.addAll(itemList);
+//        m_adapterPlayList.addAll(itemList);
         m_adapterPlayList.notifyDataSetChanged();
     }
 

@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
 import android.view.View;
@@ -72,11 +74,11 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility
                 ( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE
                 );
     }
 
@@ -153,6 +155,7 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
         overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void LoadApps()
     {
         m_packageManager = getPackageManager();
@@ -194,7 +197,7 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
                         appLabel.setText(m_apps.get(position).label);
                         return convertView;
                     }
-        };
+                };
 
         adapter.sort(new Comparator<AppDetail>()
         {
