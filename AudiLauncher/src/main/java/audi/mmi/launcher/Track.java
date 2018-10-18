@@ -36,7 +36,7 @@ public class Track implements NodeDirectory
 
     @Override
     public String GetPathDir() {
-        return null;
+        return m_path;
     }
 
     @Override
@@ -46,12 +46,12 @@ public class Track implements NodeDirectory
 
     @Override
     public int GetParentNumber() {
-        return 0;
+        return parentNumber;
     }
 
     @Override
     public int GetNumberTracks() {
-        return 0;
+        return number;
     }
 
     @Override

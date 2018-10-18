@@ -1,7 +1,5 @@
 package audi.mmi.launcher;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
@@ -9,9 +7,9 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -23,10 +21,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Vector;
 
 public class MusicPlayer extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, OnCompletionListener {
 
@@ -37,70 +33,63 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
     private Runnable m_runnable2;
     // формат времени
     private int m_hours, m_minutes;
-    // список отображения
-    private List<String> m_pathList = null;
-    private String m_dirRoot = "/"; // символ для корневого элемента
-
     // текущий трек
     private String m_dirAudioTrack;
-    // Текущий номер дорожки в списке
-    private int m_currentIndexAudioTrack = -1;
+    // Текущий выбранный файл
+    private NodeDirectory m_nodeDirectory;
     //  плаер для воспроизведения
     private MPlayer m_MPlayer;
     // список востроизведения
     private ListView m_playList;
-    ArrayAdapter<NodeDirectory> m_adapterPlayList;
-    List<String> itemList = new ArrayList();
     // дериктория для воспроизведения
-    MusicFiles m_musicFiles;
+    private  MusicFiles m_musicFiles;
     // время воспроизведения
-    TextView m_playTime = null;
+    private  TextView m_playTime = null;
+    // адаптер
+    private ArrayAdapter<NodeDirectory> m_adapterPlayList;
+
+    private void CreateAdapter()
+    {
+        m_adapterPlayList =  new ArrayAdapter<NodeDirectory>(this, R.layout.list_item2, m_musicFiles.GetAllFiles(1))
+        {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent)
+            {
+                if(convertView == null)
+                    convertView = getLayoutInflater().inflate(R.layout.list_item2, null);
+
+                TextView trackLabel = convertView.findViewById(R.id.textViewContent);
+                trackLabel.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
+                trackLabel.setText(getItem(position).GetName());
+
+                ImageView imageView = convertView.findViewById(R.id.TrackSelected);
+                TextView trackTime = convertView.findViewById(R.id.TrackTime);
+                trackTime.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
+
+                if(m_dirAudioTrack == getItem(position).GetPathDir())
+                {
+                    imageView.setSelected(true);
+                    trackLabel.setSelected(true);
+                    trackTime.setSelected(true);
+                    m_playTime = trackTime;
+                }
+                else
+                {
+                    imageView.setSelected(false);
+                    trackLabel.setSelected(false);
+                    trackTime.setSelected(false);
+                    trackTime.setText("");
+                }
+                return convertView;
+            }
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mplayer);
-//        m_playList = (ListView) findViewById(R.id.PlayList);
-//        // Можно выводить на экран список
-//        m_adapterPlayList = new ArrayAdapter<String>(this, R.layout.list_item2, itemList)
-//        {
-//            @Override
-//            public View getView(int position, View convertView, ViewGroup parent)
-//            {
-//                if(convertView == null)
-//                    convertView = getLayoutInflater().inflate(R.layout.list_item2, null);
-//
-//                TextView trackLabel = (TextView)convertView.findViewById(R.id.textViewContent);
-//                trackLabel.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
-//                trackLabel.setText(itemList.get(position));
-//                ImageView imageView = (ImageView)convertView.findViewById(R.id.TrackSelected);
-//                TextView trackTime = (TextView)convertView.findViewById(R.id.TrackTime);
-//                trackTime.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
-//
-//
-//                if(m_dirAudioTrack == m_pathList.get(position))
-//                {
-//                    imageView.setSelected(true);
-//                    trackLabel.setSelected(true);
-//                    trackTime.setSelected(true);
-//                    m_playTime = trackTime;
-//
-//                }
-//                else
-//                {
-//                    imageView.setSelected(false);
-//                    trackLabel.setSelected(false);
-//                    trackTime.setSelected(false);
-//                    trackTime.setText("");
-//                }
-//                return convertView;
-//            }
-//        };
-
-
-        m_dirRoot = Environment.getExternalStorageDirectory().getPath();
-//        getDir(m_dirRoot); // выводим список файлов и папок в корневой папке системы
 
         SetDecorView();
         ImageView view = findViewById(R.id.view);
@@ -124,64 +113,30 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
         m_handler.postDelayed(m_runnable2, 100);
 
         CreateButtons();
+        CreatePlayer();
+        CreateMusicFiles();
+        CreateAdapter();
+        CreatePlayList();
+    }
 
-        m_MPlayer = new MPlayer();
-        m_MPlayer.RegisterPlayer(this);
-
+    private void CreateMusicFiles()
+    {
+        String m_dirRoot = Environment.getExternalStorageDirectory().getPath();
         String dirPath = m_dirRoot + "/Music";
         m_musicFiles = new MusicFiles(dirPath);
+    }
 
-//        // Количество файлов внулевой папке
-//        for(NodeDirectory nodeDirectory : m_musicFiles.GetFolders(0))
-//        {
-//          String name = nodeDirectory.GetName();
-//        }
-//        for(NodeDirectory nodeDirectory : m_musicFiles.GetTracks(1))
-//        {
-//            String name = nodeDirectory.GetName();
-//        }
-
-
-        m_playList = (ListView) findViewById(R.id.PlayList);
-        // Можно выводить на экран список
-        m_adapterPlayList = new ArrayAdapter<NodeDirectory>(this, R.layout.list_item2, m_musicFiles.GetTracks(0))
-        {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent)
-            {
-                if(convertView == null)
-                    convertView = getLayoutInflater().inflate(R.layout.list_item2, null);
-
-                TextView trackLabel = (TextView)convertView.findViewById(R.id.textViewContent);
-                trackLabel.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
-                trackLabel.setText(m_musicFiles.GetTracks(0).get(position).GetName());
-                ImageView imageView = (ImageView)convertView.findViewById(R.id.TrackSelected);
-                TextView trackTime = (TextView)convertView.findViewById(R.id.TrackTime);
-                trackTime.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
-
-
-//                if(m_dirAudioTrack == m_pathList.get(position))
-//                {
-//                    imageView.setSelected(true);
-//                    trackLabel.setSelected(true);
-//                    trackTime.setSelected(true);
-//                    m_playTime = trackTime;
-//
-//                }
-//                else
-//                {
-//                    imageView.setSelected(false);
-//                    trackLabel.setSelected(false);
-//                    trackTime.setSelected(false);
-//                    trackTime.setText("");
-//                }
-                return convertView;
-            }
-        };
-
+    private void CreatePlayList()
+    {
+        m_playList = findViewById(R.id.PlayList);
         m_playList.setAdapter(m_adapterPlayList);
         m_playList.setOnItemClickListener(this);
+    }
 
+    private void CreatePlayer()
+    {
+        m_MPlayer = new MPlayer();
+        m_MPlayer.RegisterPlayer(this);
     }
 
     private void CreateButtons()
@@ -261,10 +216,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onBackPressed()
     {
-        if(m_pathList.isEmpty())
-            BackToHome();
-        else
-            getDir(m_pathList.get(0));
+        BackToHome();
     }
 
     private void BackToHome()
@@ -274,49 +226,6 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
         finish();
         startActivity(intent);
         overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);
-    }
-
-    private void getDir(String dirPath)
-    {
-        File file = new File(dirPath);
-        File[] filesArray = file.listFiles();
-        // получаем список файлов
-        itemList = new ArrayList<>();
-        m_pathList = new ArrayList<>();
-        // если мы не в корневой папке
-        if (!dirPath.equals(m_dirRoot))
-        {
-            itemList.add(m_dirRoot);
-            itemList.add("../");
-
-            m_pathList.add(m_dirRoot);
-            m_pathList.add(file.getParent());
-        }
-
-        Arrays.sort(filesArray, fileComparator);
-
-        // формируем список папок и файлов для передачи адаптеру
-        for (File aFilesArray : filesArray)
-        {
-            file = aFilesArray;
-            String filename = file.getName();
-
-            // Работаем только с доступными папками и файлами
-            if (!file.isHidden() && file.canRead())
-                if (file.isDirectory())
-                {
-                    m_pathList.add(file.getPath());
-                    itemList.add(file.getName() + "/");
-                }
-                else if (filename.endsWith(".mp3") || filename.endsWith(".wma") || filename.endsWith(".ogg"))
-                {
-                    m_pathList.add(file.getPath());
-                    itemList.add(file.getName());
-                }
-        }
-        m_adapterPlayList.clear();
-//        m_adapterPlayList.addAll(itemList);
-        m_adapterPlayList.notifyDataSetChanged();
     }
 
     // Компоратор для сортировки дерикторий музыкальных треков
@@ -337,71 +246,47 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
     };
 
     // Воспроизведение песни
-    private void Play(int position)
+    private void Play()
     {
-        m_playList.smoothScrollToPosition(position);
+        int scrollPos = m_adapterPlayList.getPosition(m_nodeDirectory);
+        m_playList.smoothScrollToPosition(scrollPos);
         m_adapterPlayList.notifyDataSetChanged();
         // пока у нас есть треки мы их воспроизводим
-        File file = new File(m_pathList.get(position));
-        if(CheckTypeFile(file)) {
-            PlayMusic(file);
-        }
-    }
-
-    // Проверяем файл песни
-    private boolean CheckTypeFile(File file)
-    {
-        // если это папка
-        if (file.isDirectory())
+        if(m_nodeDirectory.IsFolder())
         {
-            // если она доступна для просмотра, то заходим в неё
-            if (file.canRead())
-                getDir(file.getPath());
-            else // если папка закрыта, то сообщаем об этом
-                ErrorMassage(file);
-
-            return false;
+            m_adapterPlayList.clear();
+            Vector<NodeDirectory> files = m_musicFiles.GetAllFiles(m_nodeDirectory.GetNumber());
+            m_adapterPlayList.addAll(files);
         }
-        return true;
+        else
+        {
+            m_dirAudioTrack = m_nodeDirectory.GetPathDir();
+            PlayMusic();
+        }
+
     }
 
-    private void PlayMusic(File file)
+    private void PlayMusic()
     {
-        // если элемент списка является файлом, то выводим его имя
-        m_dirAudioTrack = file.getAbsolutePath();
         m_MPlayer.StartPlayer(m_dirAudioTrack);
-
-    }
-
-    // Сообщение об ошибке чтения файла
-    private void ErrorMassage(File file)
-    {
-        String title = "[" + file.getName() + "] папка не доступна!";
-        new AlertDialog.Builder(this)
-                .setIcon(R.mipmap.ic_launcher)
-                .setTitle(title)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which){}
-                })
-                .show();
     }
 
     // выполняетя врезультате окончания песни
     @Override
     public void onCompletion(MediaPlayer mp)
     {
-        // пытаемся воспроизвести следующий трек
-        m_currentIndexAudioTrack++;
-        Play(m_currentIndexAudioTrack);
+        int indexTrack = m_adapterPlayList.getPosition(m_nodeDirectory) + 1;
+        if(indexTrack < m_adapterPlayList.getCount())
+        {
+            m_nodeDirectory = m_adapterPlayList.getItem(indexTrack);
+            Play();
+        }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-    {
-        m_currentIndexAudioTrack  = position;
-        // обработка нажатий на элементах списка
-        Play(m_currentIndexAudioTrack);
+    {   // обработка нажатий на элементах списка
+        m_nodeDirectory = (NodeDirectory)(parent.getItemAtPosition(position));
+        Play();
     }
 }

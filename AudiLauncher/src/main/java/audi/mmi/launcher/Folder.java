@@ -37,7 +37,7 @@ public class Folder implements NodeDirectory
 
     @Override
     public String GetPathDir() {
-        return null;
+        return m_path;
     }
 
     @Override

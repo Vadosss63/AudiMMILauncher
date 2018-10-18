@@ -1,6 +1,8 @@
 package audi.mmi.launcher;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -11,7 +13,7 @@ public class MusicFiles
     // Мап для хранения папок
     private Vector<NodeDirectory> m_mapFolders = new Vector<>();
     // Мап для хранения треков
-    private HashMap<NodeDirectory, Vector<NodeDirectory>> m_mapTracks = new HashMap<>();
+    private HashMap<Integer, Vector<NodeDirectory>> m_mapTracks = new HashMap<>();
     // Мап для папок
     private HashMap<Integer, Vector<NodeDirectory>> m_mapChaldeanFolders = new HashMap<>();
     // Мар с для доступа к по пути
@@ -24,10 +26,9 @@ public class MusicFiles
 
     public String GetPathTrack(int parentNumber, int number)
     {
-        if(parentNumber < m_mapFolders.size())
+        if(m_mapTracks.containsKey(m_mapTracks.size()))
         {
-            NodeDirectory folder = m_mapFolders.get(parentNumber);
-            Vector<NodeDirectory> listTracks = m_mapTracks.get(folder);
+            Vector<NodeDirectory> listTracks = m_mapTracks.get(parentNumber);
             if( number < listTracks.size())
             {
                 NodeDirectory track = listTracks.get(number);
@@ -42,13 +43,25 @@ public class MusicFiles
         if(m_mapChaldeanFolders.containsKey(parentFolder))
            return m_mapChaldeanFolders.get(parentFolder);
 
-        return new Vector<NodeDirectory>();
+        return new Vector<>();
+    }
+
+    public Vector<NodeDirectory> GetAllFiles(int parentFolder)
+    {
+        Vector<NodeDirectory> dataFales = new Vector<NodeDirectory>();
+        if(m_mapChaldeanFolders.containsKey(parentFolder))
+            dataFales.addAll(m_mapChaldeanFolders.get(parentFolder));
+
+        if(m_mapTracks.containsKey(parentFolder))
+            dataFales.addAll(m_mapTracks.get(parentFolder));
+
+        return dataFales;
     }
 
     public Vector<NodeDirectory> GetTracks(int parentFolder)
     {
-        if(parentFolder < m_mapFolders.size())
-            return m_mapTracks.get(m_mapFolders.get(parentFolder));
+        if(m_mapTracks.containsKey(parentFolder))
+            return m_mapTracks.get(parentFolder);
 
         return new Vector<NodeDirectory>();
     }
@@ -82,6 +95,9 @@ public class MusicFiles
         // Читаем дерикторию Получаем список файлов
         File parentFile  = new File(dirPath);
         File[] listFiles = new File(dirPath).listFiles();
+
+        Arrays.sort(listFiles, fileComparator);
+
         // Заполняем родительскую папку
         Folder parentFolder = new Folder(parentFile.getName());
         // устонавливаем родительскую папку
@@ -97,6 +113,14 @@ public class MusicFiles
         // Задаем папку
         m_mapFolders.add(parentFolder);
 
+        // Задаем нулевую папу
+        if(!m_mapChaldeanFolders.containsKey(parentIndex))
+        {
+            Vector<NodeDirectory> list = new Vector<NodeDirectory>();
+            m_mapChaldeanFolders.put(parentIndex, list);
+        }
+        m_mapChaldeanFolders.get(parentIndex).add(parentFolder);
+
         Vector<NodeDirectory> mapTracks = new Vector<>();
         // формируем список папок и файлов
         for (File file : listFiles)
@@ -108,15 +132,6 @@ public class MusicFiles
             // проверяем файл дериктория???
             if (file.isDirectory())
             {
-                // Задаем нулевую папу
-                if(!m_mapChaldeanFolders.containsKey(parentIndex))
-                {
-                    Vector<NodeDirectory> list = new Vector<NodeDirectory>();
-                    m_mapChaldeanFolders.put(parentIndex, list);
-                }
-                m_mapChaldeanFolders.get(parentIndex).add(parentFolder);
-
-
                 // спускаемся рекурсивно читая вложенное содержимое
                 GetAllFiles(file.getPath(), parentFolder.GetNumber());
                 continue;
@@ -136,7 +151,23 @@ public class MusicFiles
         }
         // Устаналиваем количество треков в папке
         parentFolder.setNumberTracks(numberTracks);
-        m_mapTracks.put(parentFolder, mapTracks);
+        m_mapTracks.put(parentFolder.GetNumber(), mapTracks);
         m_mapPaths.put(parentFolder.GetPathDir(), parentFolder);
     }
+
+    // Компоратор для сортировки дерикторий музыкальных треков
+    Comparator<? super File> fileComparator = new Comparator<File>()
+    {
+        public int compare(File file1, File file2)
+        {
+
+            if (file1.isDirectory() && !file2.isDirectory()) return -1;
+
+            if (file2.isDirectory() && !file1.isDirectory()) return 1;
+
+            String pathLowerCaseFile1 = file1.getName().toLowerCase();
+            String pathLowerCaseFile2 = file2.getName().toLowerCase();
+            return String.valueOf(pathLowerCaseFile1).compareTo(pathLowerCaseFile2);
+        }
+    };
 }
