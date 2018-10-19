@@ -95,6 +95,7 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
 
         Button rbbutton = findViewById(R.id.rbbutton);
         rbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
+
         rtbutton.setOnClickListener(this);
     }
 
@@ -130,9 +131,9 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
                 view2.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim2));
 
                 Intent intent = new Intent(this, Home.class);
-
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(intent);
-                finish();
+
                 overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);
                 break;
             default:

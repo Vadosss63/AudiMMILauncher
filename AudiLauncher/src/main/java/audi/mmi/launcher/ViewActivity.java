@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Home extends AppCompatActivity implements View.OnClickListener
+public abstract class ViewActivity extends AppCompatActivity implements View.OnClickListener
 {
     private static final int REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE = 1;
     private Time m_time;
@@ -34,39 +34,33 @@ public class Home extends AppCompatActivity implements View.OnClickListener
         setContentView(R.layout.home);
         SetDecorView();
 
-//        ImageView view = findViewById(R.id.view);
-//        view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim));
-
+        StartAnimation1(R.anim.menu_anim);
         CreateTime();
         CreateButtons();
     }
-    @Override
-    protected void onResume()
+
+    private void StartAnimation1(int menu_anim)
     {
-        super.onResume();
         ImageView view = findViewById(R.id.view);
-        view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim));
+        view.startAnimation(AnimationUtils.loadAnimation(this, menu_anim));
     }
 
     @Override
-    public void onClick(View v)
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
-        switch (v.getId())
+        if (requestCode != REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE)
+            return;
+
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
         {
-            case R.id.rtbutton:
-                PushRTButton();
-                break;
-            case R.id.ltbutton:
-                PushLTButton("http://audi.com");
-                break;
-            case R.id.rbbutton:
-                PushRBButton("geo:");
-                break;
-            case R.id.lbbutton:
-                PushLBButton();
-                break;
-            default:
-                break;
+            // permission granted
+            StartMusic();
+        }
+        else
+        {
+            // permission denied
+            Toast toast = Toast.makeText(getApplicationContext(),"В доступе отказано!", Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 
@@ -77,6 +71,18 @@ public class Home extends AppCompatActivity implements View.OnClickListener
 //        startActivity(intent);
 //        finish();
 //        overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);
+    }
+
+    private void SetDecorView()
+    {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility
+                ( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
     private void PushLBButton()
@@ -101,6 +107,18 @@ public class Home extends AppCompatActivity implements View.OnClickListener
         StartActivity(intent);
     }
 
+    private void StartActivity(Intent intent)
+    {
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(intent);
+        overridePendingTransition(R.anim.alpha_on, R.anim.alpha_off);
+    }
+
+    private void StartAnimation()
+    {
+        StartAnimation1(R.anim.menu_anim2);
+    }
+
     private void PushLTButton(String s)
     {
         StartAnimation();
@@ -120,40 +138,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener
     {
         Intent intent = new Intent(this, MusicPlayer.class);
         StartActivity(intent);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
-        if (requestCode != REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE)
-            return;
-
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            StartMusic();
-        else
-        {
-            Toast toast = Toast.makeText(getApplicationContext(),"В доступе отказано!", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-    }
-
-    private void SetDecorView()
-    {
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility
-                ( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
-    }
-
-    private void StartActivity(Intent intent)
-    {
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
-        overridePendingTransition(R.anim.alpha_on, R.anim.alpha_off);
     }
 
     private void CreateButtons()
@@ -176,12 +160,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener
         lbbutton.setOnClickListener(this);
     }
 
-    private void StartAnimation()
-    {
-        ImageView view = findViewById(R.id.view);
-        view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.menu_anim2));
-    }
-
     private void CreateTime()
     {
         m_time = new Time();
@@ -193,13 +171,9 @@ public class Home extends AppCompatActivity implements View.OnClickListener
                 m_time.setToNow();
                 m_hours = m_time.hour;
                 m_minutes = m_time.minute;
-                TextView textTime = findViewById(R.id.texttime);
+                TextView textTime = (TextView) findViewById(R.id.texttime);
                 textTime.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
-                String text;
-                if((m_time.second % 2) == 0)
-                    text = String.format("%02d:%02d", m_hours, m_minutes);
-                else
-                    text = String.format("%02d %02d", m_hours, m_minutes);
+                String text = String.format("%02d:%02d", m_hours, m_minutes);
                 textTime.setText(text);
                 m_handler.postDelayed(m_runnable, 900);
             }

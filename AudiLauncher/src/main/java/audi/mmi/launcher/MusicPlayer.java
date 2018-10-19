@@ -23,9 +23,13 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.Comparator;
 import java.util.Vector;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
 
 public class MusicPlayer extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, OnCompletionListener {
 
+    private final static String TAG = "MainActivity";
     // текущие время
     private Time m_Time;
     private Handler m_handler;
@@ -119,6 +123,12 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
         CreatePlayList();
     }
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+    }
+
     private void CreateMusicFiles()
     {
         String m_dirRoot = Environment.getExternalStorageDirectory().getPath();
@@ -184,8 +194,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
         };
     }
 
-    private void SetDecorView()
-    {
+    private void SetDecorView()   {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility
                 ( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -195,7 +204,6 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
-
 
     // действие приповторном нажании на кнопку
     @Override
@@ -223,7 +231,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
     {
         StartAnimation();
         Intent intent = new Intent(this, Home.class);
-        finish();
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
         overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);
     }
