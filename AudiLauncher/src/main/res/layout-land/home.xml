@@ -7,7 +7,7 @@
     tools:ignore="MissingDefaultResource">
 
     <TextView
-        android:id="@+id/texttime"
+        android:id="@+id/timeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -15,11 +15,11 @@
         android:textColor="@color/White"
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/gridLayout2"
-        app:layout_constraintStart_toEndOf="@+id/gridLayout" />
+        app:layout_constraintEnd_toStartOf="@+id/rightGrid"
+        app:layout_constraintStart_toEndOf="@+id/leftGrid" />
 
     <android.support.v7.widget.GridLayout
-        android:id="@+id/gridLayout"
+        android:id="@+id/leftGrid"
         android:layout_width="170sp"
         android:layout_height="match_parent"
         app:columnCount="1"
@@ -28,32 +28,32 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/ltbutton"
+            android:id="@+id/browser"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@drawable/ltbutton_anim"
-            android:gravity="left"
-            android:text="браузер"
-            android:textColor="@color/buttontext"
+            android:background="@drawable/left_top_button_animation"
+            android:gravity="start"
+            android:text="@string/leftTopButtonText"
+            android:textColor="@color/button_text_color"
             android:textSize="28sp"
             app:layout_gravity="fill"
             app:layout_rowWeight="1" />
 
         <Button
-            android:id="@+id/lbbutton"
+            android:id="@+id/musicPlayer"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@drawable/lbbutton_anim"
-            android:gravity="left|bottom"
-            android:text="музыка"
-            android:textColor="@color/buttontext"
+            android:background="@drawable/left_bottom_button_animation"
+            android:gravity="start|bottom"
+            android:text="@string/leftBottomButtonText"
+            android:textColor="@color/button_text_color"
             android:textSize="28sp"
             app:layout_gravity="fill"
             app:layout_rowWeight="1" />
     </android.support.v7.widget.GridLayout>
 
     <android.support.v7.widget.GridLayout
-        android:id="@+id/gridLayout2"
+        android:id="@+id/rightGrid"
         android:layout_width="170sp"
         android:layout_height="match_parent"
         app:columnCount="1"
@@ -62,25 +62,25 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/rtbutton"
+            android:id="@+id/mainMenu"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@drawable/rtbutton_anim"
-            android:gravity="right"
-            android:text="меню"
-            android:textColor="@color/buttontext"
+            android:background="@drawable/right_top_button_animation"
+            android:gravity="end"
+            android:text="@string/rightTopButton"
+            android:textColor="@color/button_text_color"
             android:textSize="28sp"
             app:layout_gravity="fill"
             app:layout_rowWeight="1" />
 
         <Button
-            android:id="@+id/rbbutton"
+            android:id="@+id/maps"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@drawable/rbbutton_anim"
-            android:gravity="right|bottom"
-            android:text="карты"
-            android:textColor="@color/buttontext"
+            android:background="@drawable/right_bottom_button_animation"
+            android:gravity="end|bottom"
+            android:text="@string/rightBottomButton"
+            android:textColor="@color/button_text_color"
             android:textSize="28sp"
             app:layout_gravity="fill"
             app:layout_rowWeight="1" />
@@ -88,16 +88,33 @@
     </android.support.v7.widget.GridLayout>
 
     <ImageView
-        android:id="@+id/view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:id="@+id/mainView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:contentDescription="@null"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@+id/texttime"
-        app:layout_constraintEnd_toEndOf="@+id/gridLayout2"
-        app:layout_constraintStart_toStartOf="@+id/gridLayout"
+        app:layout_constraintBottom_toBottomOf="@+id/timeText"
+        app:layout_constraintEnd_toEndOf="@+id/rightGrid"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/leftGrid"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/menuanim" />
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/menu_animation" />
+
+    <ListView
+        android:id="@+id/mainList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="64dp"
+        android:choiceMode="singleChoice"
+        app:layout_constraintBottom_toTopOf="@+id/timeText"
+        app:layout_constraintEnd_toEndOf="@+id/rightGrid"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/leftGrid"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
 

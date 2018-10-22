@@ -13,13 +13,13 @@
         android:layout_alignParentLeft="true"
         android:layout_centerHorizontal="true"
         android:adjustViewBounds="true"
-        android:src="@drawable/menupressed_anim" />
+        android:src="@drawable/menu_pressed_anim" />
 
     <TextView
         android:id="@+id/textViewContent"
         android:layout_width="340dp"
         android:layout_height="28dp"
-        android:textColor="@color/state_selector"
+        android:textColor="@color/track_item_state"
         android:textSize="23sp" />
 
     <TextView

@@ -41,14 +41,14 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mainmenu);
+        setContentView(R.layout.main_menu);
 
         LoadApps();
         LoadListView();
         AddClickListener();
 
         SetDecorView();
-        ImageView view = findViewById(R.id.view);
+        ImageView view = findViewById(R.id.mainView);
         ListView view2 = findViewById(R.id.apps_list);
         view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim));
         view2.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim));
@@ -84,16 +84,16 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
 
     private void CreateButtons()
     {
-        Button ltbutton = findViewById(R.id.ltbutton);
+        Button ltbutton = findViewById(R.id.browser);
         ltbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        Button lbbutton = findViewById(R.id.lbbutton);
+        Button lbbutton = findViewById(R.id.musicPlayer);
         lbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        Button rtbutton = findViewById(R.id.rtbutton);
+        Button rtbutton = findViewById(R.id.mainMenu);
         rtbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        Button rbbutton = findViewById(R.id.rbbutton);
+        Button rbbutton = findViewById(R.id.maps);
         rbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
         rtbutton.setOnClickListener(this);
@@ -110,7 +110,7 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
                 m_time.setToNow();
                 m_hours = m_time.hour;
                 m_minutes = m_time.minute;
-                TextView myText = (TextView) findViewById(R.id.texttime);
+                TextView myText = (TextView) findViewById(R.id.timeText);
                 myText.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
                 String timetext = String.format("%02d:%02d", m_hours, m_minutes);
                 myText.setText(timetext);
@@ -124,8 +124,8 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
     {
         switch (v.getId())
         {
-            case R.id.rtbutton:
-                ImageView view = findViewById(R.id.view);
+            case R.id.mainMenu:
+                ImageView view = findViewById(R.id.mainView);
                 ListView view2 = findViewById(R.id.apps_list);
                 view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim2));
                 view2.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim2));
@@ -144,7 +144,7 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
     @Override
     public void onBackPressed()
     {
-        ImageView view = findViewById(R.id.view);
+        ImageView view = findViewById(R.id.mainView);
         ListView view2 = findViewById(R.id.apps_list);
         view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim2));
         view2.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim2));
@@ -183,13 +183,13 @@ public class ApplicationsMenu extends AppCompatActivity implements View.OnClickL
         m_listAdapters = (ListView)findViewById(R.id.apps_list);
 
         final ArrayAdapter<AppDetail> adapter =
-                new ArrayAdapter<AppDetail>(this, R.layout.list_item, m_apps)
+                new ArrayAdapter<AppDetail>(this, R.layout.apps_item, m_apps)
                 {
                     @Override
                     public View getView(int position, View convertView, ViewGroup parent)
                     {
                         if(convertView == null)
-                            convertView = getLayoutInflater().inflate(R.layout.list_item, null);
+                            convertView = getLayoutInflater().inflate(R.layout.apps_item, null);
 
                         ImageView appIcon = (ImageView)convertView.findViewById(R.id.item_app_icon);
                         appIcon.setImageDrawable(m_apps.get(position).icon);

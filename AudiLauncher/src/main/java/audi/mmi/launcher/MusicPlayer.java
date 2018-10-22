@@ -7,7 +7,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
 import android.view.View;
@@ -23,8 +22,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.Comparator;
 import java.util.Vector;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+
 import android.util.Log;
 
 public class MusicPlayer extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, OnCompletionListener {
@@ -54,13 +52,13 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
 
     private void CreateAdapter()
     {
-        m_adapterPlayList =  new ArrayAdapter<NodeDirectory>(this, R.layout.list_item2, m_musicFiles.GetAllFiles(1))
+        m_adapterPlayList =  new ArrayAdapter<NodeDirectory>(this, R.layout.music_track_item, m_musicFiles.GetAllFiles(1))
         {
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
             {
                 if(convertView == null)
-                    convertView = getLayoutInflater().inflate(R.layout.list_item2, null);
+                    convertView = getLayoutInflater().inflate(R.layout.music_track_item, null);
 
                 TextView trackLabel = convertView.findViewById(R.id.textViewContent);
                 trackLabel.setTypeface(Typeface.createFromAsset(getAssets(), "font2.ttf"));
@@ -96,7 +94,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
         setContentView(R.layout.mplayer);
 
         SetDecorView();
-        ImageView view = findViewById(R.id.view);
+        ImageView view = findViewById(R.id.mainView);
         view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim));
 
         m_Time = new Time();
@@ -138,7 +136,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
 
     private void CreatePlayList()
     {
-        m_playList = findViewById(R.id.PlayList);
+        m_playList = findViewById(R.id.mainList);
         m_playList.setAdapter(m_adapterPlayList);
         m_playList.setOnItemClickListener(this);
     }
@@ -151,13 +149,13 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
 
     private void CreateButtons()
     {
-        Button ltbutton = findViewById(R.id.ltbutton);
+        Button ltbutton = findViewById(R.id.browser);
         ltbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
-        Button lbbutton = findViewById(R.id.lbbutton);
+        Button lbbutton = findViewById(R.id.musicPlayer);
         lbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
-        Button rtbutton = findViewById(R.id.rtbutton);
+        Button rtbutton = findViewById(R.id.mainMenu);
         rtbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
-        Button rbbutton = findViewById(R.id.rbbutton);
+        Button rbbutton = findViewById(R.id.maps);
         rbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
         lbbutton.setOnClickListener(this);
     }
@@ -173,7 +171,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
                 m_hours = m_Time.hour;
                 m_minutes = m_Time.minute;
                 int second = m_Time.second;
-                TextView myText = (TextView) findViewById(R.id.texttime);
+                TextView myText = (TextView) findViewById(R.id.timeText);
                 myText.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
                 String timeText;
                 if((second % 2) == 1)
@@ -209,7 +207,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View v)
     {
-        if(v.getId() != R.id.lbbutton)
+        if(v.getId() != R.id.musicPlayer)
             return;
 
         BackToHome();
@@ -217,7 +215,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
 
     private void StartAnimation()
     {
-        ImageView view = findViewById(R.id.view);
+        ImageView view = findViewById(R.id.mainView);
         view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim2));
     }
 

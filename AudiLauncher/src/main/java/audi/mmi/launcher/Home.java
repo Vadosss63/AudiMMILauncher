@@ -21,30 +21,36 @@ import android.widget.Toast;
 
 public class Home extends AppCompatActivity implements View.OnClickListener
 {
-    private static final int REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE = 1;
+    static final int REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE = 1;
     private Time m_time;
     private Handler m_handler;
     private Runnable m_runnable;
-    private int m_hours, m_minutes;
+    private int m_hours;
+    private int m_minutes;
+    private LauncherState m_launcherState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
+        ChangeState(new HomeLauncherState(this));
         SetDecorView();
-
-//        ImageView view = findViewById(R.id.view);
-//        view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim));
-
         CreateTime();
         CreateButtons();
     }
+
+
+    public void ChangeState(LauncherState launcherState)
+    {
+        this.m_launcherState = launcherState;
+    }
+
     @Override
     protected void onResume()
     {
         super.onResume();
-        ImageView view = findViewById(R.id.view);
+        ImageView view = findViewById(R.id.mainView);
         view.startAnimation(AnimationUtils.loadAnimation(this,R.anim.menu_anim));
     }
 
@@ -53,17 +59,17 @@ public class Home extends AppCompatActivity implements View.OnClickListener
     {
         switch (v.getId())
         {
-            case R.id.rtbutton:
-                PushRTButton();
+            case R.id.mainMenu:
+                m_launcherState.PushRTButton();
                 break;
-            case R.id.ltbutton:
-                PushLTButton("http://audi.com");
+            case R.id.browser:
+                m_launcherState.PushLTButton();
                 break;
-            case R.id.rbbutton:
-                PushRBButton("geo:");
+            case R.id.maps:
+                m_launcherState.PushRBButton();
                 break;
-            case R.id.lbbutton:
-                PushLBButton();
+            case R.id.musicPlayer:
+                m_launcherState.PushLBButton();
                 break;
             default:
                 break;
@@ -79,63 +85,20 @@ public class Home extends AppCompatActivity implements View.OnClickListener
 //        overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);
     }
 
-    private void PushLBButton()
-    {
-        StartAnimation();
-        int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (permissionStatus == PackageManager.PERMISSION_GRANTED)
-            StartMusic();
-        else
-        {
-            ActivityCompat.requestPermissions(this,
-                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
-                    REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE);
-        }
-    }
-
-    private void PushRBButton(String s)
-    {
-        StartAnimation();
-        Uri uri = Uri.parse(s);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        StartActivity(intent);
-    }
-
-    private void PushLTButton(String s)
-    {
-        StartAnimation();
-        Uri uri = Uri.parse(s);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        StartActivity(intent);
-    }
-
-    private void PushRTButton()
-    {
-        StartAnimation();
-        Intent intent = new Intent(this, ApplicationsMenu.class);
-        StartActivity(intent);
-    }
-
-    private void StartMusic()
-    {
-        Intent intent = new Intent(this, MusicPlayer.class);
-        StartActivity(intent);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
-        if (requestCode != REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE)
-            return;
-
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            StartMusic();
-        else
-        {
-            Toast toast = Toast.makeText(getApplicationContext(),"В доступе отказано!", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+//    {
+//        if (requestCode != REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE)
+//            return;
+//
+//        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+//            StartMusic();
+//        else
+//        {
+//            Toast toast = Toast.makeText(getApplicationContext(),"В доступе отказано!", Toast.LENGTH_SHORT);
+//            toast.show();
+//        }
+//    }
 
     private void SetDecorView()
     {
@@ -149,7 +112,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
-    private void StartActivity(Intent intent)
+    public void StartActivity(Intent intent)
     {
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
@@ -158,16 +121,16 @@ public class Home extends AppCompatActivity implements View.OnClickListener
 
     private void CreateButtons()
     {
-        Button ltbutton = findViewById(R.id.ltbutton);
+        Button ltbutton = findViewById(R.id.browser);
         ltbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        Button lbbutton = findViewById(R.id.lbbutton);
+        Button lbbutton = findViewById(R.id.musicPlayer);
         lbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        Button rtbutton = findViewById(R.id.rtbutton);
+        Button rtbutton = findViewById(R.id.mainMenu);
         rtbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        Button rbbutton = findViewById(R.id.rbbutton);
+        Button rbbutton = findViewById(R.id.maps);
         rbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
         rtbutton.setOnClickListener(this);
@@ -176,9 +139,9 @@ public class Home extends AppCompatActivity implements View.OnClickListener
         lbbutton.setOnClickListener(this);
     }
 
-    private void StartAnimation()
+    public void StartAnimation()
     {
-        ImageView view = findViewById(R.id.view);
+        ImageView view = findViewById(R.id.mainView);
         view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.menu_anim2));
     }
 
@@ -193,7 +156,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener
                 m_time.setToNow();
                 m_hours = m_time.hour;
                 m_minutes = m_time.minute;
-                TextView textTime = findViewById(R.id.texttime);
+                TextView textTime = findViewById(R.id.timeText);
                 textTime.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
                 String text;
                 if((m_time.second % 2) == 0)

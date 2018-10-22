@@ -7,7 +7,7 @@
     tools:ignore="MissingDefaultResource">
 
     <TextView
-        android:id="@+id/texttime"
+        android:id="@+id/timeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -15,11 +15,11 @@
         android:textColor="@color/White"
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/gridLayout4"
-        app:layout_constraintStart_toEndOf="@+id/gridLayout3" />
+        app:layout_constraintEnd_toStartOf="@+id/rightGrid"
+        app:layout_constraintStart_toEndOf="@+id/leftGrid" />
 
     <android.support.v7.widget.GridLayout
-        android:id="@+id/gridLayout3"
+        android:id="@+id/leftGrid"
         android:layout_width="170sp"
         android:layout_height="match_parent"
         app:columnCount="1"
@@ -28,10 +28,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/ltbutton"
+            android:id="@+id/browser"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@drawable/ltbutton_anim"
+            android:background="@drawable/left_top_button_animation"
             android:gravity="left"
             android:text=""
             android:textColor="@color/White"
@@ -40,10 +40,10 @@
             app:layout_rowWeight="1" />
 
         <Button
-            android:id="@+id/lbbutton"
+            android:id="@+id/musicPlayer"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@drawable/lbbutton_anim"
+            android:background="@drawable/left_bottom_button_animation"
             android:gravity="left|bottom"
             android:text=""
             android:textColor="@color/White"
@@ -53,7 +53,7 @@
     </android.support.v7.widget.GridLayout>
 
     <android.support.v7.widget.GridLayout
-        android:id="@+id/gridLayout4"
+        android:id="@+id/rightGrid"
         android:layout_width="170sp"
         android:layout_height="match_parent"
         app:columnCount="1"
@@ -62,10 +62,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/rtbutton"
+            android:id="@+id/mainMenu"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@drawable/rtbutton2"
+            android:background="@drawable/right_top_button_pressed"
             android:gravity="right"
             android:text="меню"
             android:textColor="@color/OrangePressed"
@@ -74,10 +74,10 @@
             app:layout_rowWeight="1" />
 
         <Button
-            android:id="@+id/rbbutton"
+            android:id="@+id/maps"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@drawable/rbbutton_anim"
+            android:background="@drawable/right_bottom_button_animation"
             android:gravity="right|bottom"
             android:text=""
             android:textColor="@color/White"
@@ -88,18 +88,18 @@
     </android.support.v7.widget.GridLayout>
 
     <ImageView
-        android:id="@+id/view"
+        android:id="@+id/mainView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@null"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@+id/texttime"
-        app:layout_constraintEnd_toEndOf="@+id/gridLayout4"
+        app:layout_constraintBottom_toBottomOf="@+id/timeText"
+        app:layout_constraintEnd_toEndOf="@+id/rightGrid"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/gridLayout3"
+        app:layout_constraintStart_toStartOf="@+id/leftGrid"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/menuanim" />
+        app:srcCompat="@drawable/menu_animation" />
 
     <ListView
         android:id="@+id/apps_list"
@@ -109,10 +109,10 @@
         android:layout_marginEnd="80dp"
         android:layout_marginStart="80dp"
         android:layout_marginTop="64dp"
-        app:layout_constraintBottom_toTopOf="@+id/texttime"
-        app:layout_constraintEnd_toEndOf="@+id/gridLayout4"
+        app:layout_constraintBottom_toTopOf="@+id/timeText"
+        app:layout_constraintEnd_toEndOf="@+id/rightGrid"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/gridLayout3"
+        app:layout_constraintStart_toStartOf="@+id/leftGrid"
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
