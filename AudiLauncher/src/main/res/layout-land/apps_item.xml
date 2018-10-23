@@ -15,7 +15,7 @@
         android:layout_centerHorizontal="true"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/menupressed_anim" />
+        android:src="@drawable/menu_pressed_anim" />
 
     <ImageView
         android:id="@+id/item_app_icon"

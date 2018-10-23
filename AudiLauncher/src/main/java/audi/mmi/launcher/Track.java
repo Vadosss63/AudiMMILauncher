@@ -9,7 +9,7 @@ public class Track implements NodeDirectory
     private String m_path;
 
 
-    public Track(String name)
+    Track(String name)
     {
         this.name = name;
     }
@@ -24,9 +24,15 @@ public class Track implements NodeDirectory
         this.number = number;
     }
 
-    public void setParentNumber(int parentNumber)
+    void setParentNumber(int parentNumber)
     {
         this.parentNumber = parentNumber;
+    }
+
+    @Override
+    public void SetName(String name)
+    {
+        this.name = name;
     }
 
     @Override
@@ -36,7 +42,7 @@ public class Track implements NodeDirectory
 
     @Override
     public String GetPathDir() {
-        return null;
+        return m_path;
     }
 
     @Override
@@ -46,12 +52,12 @@ public class Track implements NodeDirectory
 
     @Override
     public int GetParentNumber() {
-        return 0;
+        return parentNumber;
     }
 
     @Override
     public int GetNumberTracks() {
-        return 0;
+        return number;
     }
 
     @Override

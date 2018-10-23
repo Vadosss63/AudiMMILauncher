@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Android MMI Launcher</string>
-    <string name="title_activity_mainmenu">Mainmenu</string>
+    <string name="titleActivityMainMenu">MainMenu</string>
     <string name="ticker_text">123</string>
+
+    <string name="leftTopButtonText">браузер</string>
+    <string name="leftBottomButtonText">музыка</string>
+    <string name="rightTopButton">меню</string>
+    <string name="rightBottomButton">карты</string>
 </resources>

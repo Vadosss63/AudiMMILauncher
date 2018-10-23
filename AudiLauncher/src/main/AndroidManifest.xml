@@ -23,15 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="audi.mmi.launcher.ApplicationsMenu"
-            android:label="@string/title_activity_mainmenu"
-            android:screenOrientation="landscape"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name="audi.mmi.launcher.MusicPlayer"
-            android:screenOrientation="landscape"
-            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
