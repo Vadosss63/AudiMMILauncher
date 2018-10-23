@@ -30,6 +30,12 @@ public class Folder implements NodeDirectory
     }
 
     @Override
+    public void SetName(String name)
+    {
+        this.name = name;
+    }
+
+    @Override
     public String GetName()
     {
         return name;

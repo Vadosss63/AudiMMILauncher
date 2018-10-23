@@ -24,6 +24,15 @@ public class MusicFiles
         GetAllFiles(rootPathFolder, 0);
     }
 
+    public NodeDirectory GetParentFolder(NodeDirectory childFolder)
+    {
+        if(childFolder.GetParentNumber() == 0)
+            return null;
+
+       return m_mapFolders.get(childFolder.GetParentNumber() - 1);
+    }
+
+
     public String GetPathTrack(int parentNumber, int number)
     {
         if(m_mapTracks.containsKey(m_mapTracks.size()))
@@ -41,7 +50,7 @@ public class MusicFiles
     public Vector<NodeDirectory> GetFolders(int parentFolder)
     {
         if(m_mapChaldeanFolders.containsKey(parentFolder))
-           return m_mapChaldeanFolders.get(parentFolder);
+            return m_mapChaldeanFolders.get(parentFolder);
 
         return new Vector<>();
     }
@@ -116,7 +125,7 @@ public class MusicFiles
         // Задаем нулевую папу
         if(!m_mapChaldeanFolders.containsKey(parentIndex))
         {
-            Vector<NodeDirectory> list = new Vector<NodeDirectory>();
+            Vector<NodeDirectory> list = new Vector<>();
             m_mapChaldeanFolders.put(parentIndex, list);
         }
         m_mapChaldeanFolders.get(parentIndex).add(parentFolder);
@@ -156,18 +165,14 @@ public class MusicFiles
     }
 
     // Компоратор для сортировки дерикторий музыкальных треков
-    Comparator<? super File> fileComparator = new Comparator<File>()
-    {
-        public int compare(File file1, File file2)
-        {
+    private Comparator<? super File> fileComparator = (Comparator<File>) (file1, file2)->{
 
-            if (file1.isDirectory() && !file2.isDirectory()) return -1;
+        if (file1.isDirectory() && !file2.isDirectory()) return -1;
 
-            if (file2.isDirectory() && !file1.isDirectory()) return 1;
+        if (file2.isDirectory() && !file1.isDirectory()) return 1;
 
-            String pathLowerCaseFile1 = file1.getName().toLowerCase();
-            String pathLowerCaseFile2 = file2.getName().toLowerCase();
-            return String.valueOf(pathLowerCaseFile1).compareTo(pathLowerCaseFile2);
-        }
+        String pathLowerCaseFile1 = file1.getName().toLowerCase();
+        String pathLowerCaseFile2 = file2.getName().toLowerCase();
+        return String.valueOf(pathLowerCaseFile1).compareTo(pathLowerCaseFile2);
     };
 }

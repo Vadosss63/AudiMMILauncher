@@ -1,14 +1,17 @@
 package audi.mmi.launcher;
 
 import android.widget.Button;
+import android.widget.ListView;
 
 public abstract class LauncherState
 {
     Home m_home;
+    ListView m_mainView;
 
     public LauncherState(Home home)
     {
         this.m_home = home;
+        m_mainView = m_home.findViewById(R.id.mainList);
     }
 
     public abstract void PushLBButton();
@@ -18,6 +21,13 @@ public abstract class LauncherState
     public abstract void PushLTButton();
 
     public abstract void PushRTButton();
+
+    public abstract void ChangeAdapter();
+
+    public void OnBackPressed(){}
+
+
+//    public abstract
 
     protected void TextButtonOff()
     {

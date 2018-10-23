@@ -1,15 +1,11 @@
 package audi.mmi.launcher;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
 import android.view.View;
@@ -17,7 +13,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Home extends AppCompatActivity implements View.OnClickListener
 {
@@ -34,12 +29,11 @@ public class Home extends AppCompatActivity implements View.OnClickListener
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
-        ChangeState(new HomeLauncherState(this));
+        ChangeState(HomeLauncherState.Instance(this));
         SetDecorView();
         CreateTime();
         CreateButtons();
     }
-
 
     public void ChangeState(LauncherState launcherState)
     {
@@ -74,15 +68,13 @@ public class Home extends AppCompatActivity implements View.OnClickListener
             default:
                 break;
         }
+        m_launcherState.ChangeAdapter();
     }
 
     @Override
     public void onBackPressed()
     {
-//        Intent intent = new Intent(this, Home.class);
-//        startActivity(intent);
-//        finish();
-//        overridePendingTransition(R.anim.alpha_on,R.anim.alpha_off);
+        m_launcherState.OnBackPressed();
     }
 
 //    @Override
@@ -103,13 +95,16 @@ public class Home extends AppCompatActivity implements View.OnClickListener
     private void SetDecorView()
     {
         View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility
-                ( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+        {
+            decorView.setSystemUiVisibility
+                    ( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        }
     }
 
     public void StartActivity(Intent intent)
@@ -121,22 +116,22 @@ public class Home extends AppCompatActivity implements View.OnClickListener
 
     private void CreateButtons()
     {
-        Button ltbutton = findViewById(R.id.browser);
-        ltbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
+        Button LTButton = findViewById(R.id.browser);
+        LTButton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        Button lbbutton = findViewById(R.id.musicPlayer);
-        lbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
+        Button LBButton = findViewById(R.id.musicPlayer);
+        LBButton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        Button rtbutton = findViewById(R.id.mainMenu);
-        rtbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
+        Button RTButton = findViewById(R.id.mainMenu);
+        RTButton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        Button rbbutton = findViewById(R.id.maps);
-        rbbutton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
+        Button RBButton = findViewById(R.id.maps);
+        RBButton.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
 
-        rtbutton.setOnClickListener(this);
-        ltbutton.setOnClickListener(this);
-        rbbutton.setOnClickListener(this);
-        lbbutton.setOnClickListener(this);
+        RTButton.setOnClickListener(this);
+        LTButton.setOnClickListener(this);
+        RBButton.setOnClickListener(this);
+        LBButton.setOnClickListener(this);
     }
 
     public void StartAnimation()
@@ -148,25 +143,20 @@ public class Home extends AppCompatActivity implements View.OnClickListener
     private void CreateTime()
     {
         m_time = new Time();
-        m_runnable = new Runnable()
+        m_runnable = (Runnable)()->
         {
-            @Override
-            public void run()
-            {
-                m_time.setToNow();
-                m_hours = m_time.hour;
-                m_minutes = m_time.minute;
-                TextView textTime = findViewById(R.id.timeText);
-                textTime.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
-                String text;
-                if((m_time.second % 2) == 0)
-                    text = String.format("%02d:%02d", m_hours, m_minutes);
-                else
-                    text = String.format("%02d %02d", m_hours, m_minutes);
-                textTime.setText(text);
-                m_handler.postDelayed(m_runnable, 900);
-            }
+            m_time.setToNow();
+            m_hours = m_time.hour;
+            m_minutes = m_time.minute;
+            TextView textTime = findViewById(R.id.timeText);
+            textTime.setTypeface(Typeface.createFromAsset(getAssets(), "font.ttf"));
+            String text = (m_time.second % 2) == 0 ? String.format("%02d:%02d", m_hours, m_minutes):
+                    String.format("%02d %02d", m_hours, m_minutes);
+
+            textTime.setText(text);
+            m_handler.postDelayed(m_runnable, 900);
         };
+
         m_handler = new Handler();
         m_handler.post(m_runnable);
     }

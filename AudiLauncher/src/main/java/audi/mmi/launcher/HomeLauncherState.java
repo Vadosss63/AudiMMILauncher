@@ -6,15 +6,21 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.widget.Button;
 
 public class HomeLauncherState extends LauncherState
 {
+    private static LauncherState m_instance = null;
 
-    public HomeLauncherState(Home home)
+    private HomeLauncherState(Home home)
     {
         super(home);
-        TextButtonOn();
+    }
+
+    static LauncherState Instance(Home home)
+    {
+        if(m_instance == null)
+            m_instance = new HomeLauncherState(home);
+        return m_instance;
     }
 
     @Override
@@ -23,7 +29,7 @@ public class HomeLauncherState extends LauncherState
         m_home.StartAnimation();
         int permissionStatus = ContextCompat.checkSelfPermission(m_home, Manifest.permission.READ_EXTERNAL_STORAGE);
         if (permissionStatus == PackageManager.PERMISSION_GRANTED)
-            m_home.ChangeState(new PlayerLauncherState(m_home));
+            m_home.ChangeState(PlayerLauncherState.Instance(m_home));
         else
         {
             ActivityCompat.requestPermissions(m_home,
@@ -57,7 +63,15 @@ public class HomeLauncherState extends LauncherState
     {
         TextButtonOff();
         m_home.StartAnimation();
-        m_home.ChangeState(new AppsMenuLauncherState(m_home));
+        m_home.ChangeState(AppsMenuLauncherState.Instance(m_home));
+    }
+
+    @Override
+    public void ChangeAdapter()
+    {
+        TextButtonOn();
+        m_mainView.setAdapter(null);
+        m_mainView.setOnItemClickListener(null);
     }
 
 }

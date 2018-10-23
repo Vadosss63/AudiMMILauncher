@@ -23,17 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--<activity-->
-            <!--android:name="audi.mmi.launcher.ApplicationsMenu"-->
-            <!--android:label="@string/titleActivityMainMenu"-->
-            <!--android:parentActivityName="audi.mmi.launcher.Home"-->
-            <!--android:screenOrientation="landscape"-->
-            <!--android:theme="@style/AppTheme" />-->
-        <!--<activity-->
-            <!--android:name="audi.mmi.launcher.MusicPlayer"-->
-            <!--android:parentActivityName="audi.mmi.launcher.Home"-->
-            <!--android:screenOrientation="landscape"-->
-            <!--android:theme="@style/AppTheme" />-->
     </application>
 
 </manifest>
