@@ -28,8 +28,8 @@ public class TestEncoderListTracks
     @Test
     public void AddTrackNumber() throws Exception
     {
-        encoderListTracks.AddTrackNumber(1);
-        byte[] dataAddTrackNumber = new byte[]{ 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00 };
+        encoderListTracks.AddTrackNumber(500);
+        byte[] dataAddTrackNumber = new byte[]{ 0x01, (byte) 0xF4, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00 };
         byte[] actualAddTrackNumber =  encoderListTracks.GetDataByte();
         assertArrayEquals(dataAddTrackNumber, actualAddTrackNumber);
     }

@@ -18,7 +18,6 @@ public class EncoderMainHeader
         AddHeader();
         AddCommand(command);
         AddSize();
-
         m_dataByte.addAll(0, m_vectorHeader);
         //  добавляем в конец CRC
         m_dataByte.add(crc);
@@ -63,22 +62,22 @@ public class EncoderMainHeader
     // TODO как - то расчитать CRC
     private byte CountCRC()
     {
-        byte crc = (byte) 0xFF;
+        short crc = (short) 0xFF;
 
         for(int i = 0; i < m_dataByte.size(); i++)
         {
-            byte dat = m_dataByte.get(i);
+            short dat = (short) (((short) m_dataByte.get(i) - Byte.MIN_VALUE)& 0xFF);
 
-            for(byte j = 0; j < 8; j++)
+            for(int j = 0; j < 8; j++)
             {
-                byte aux = (byte) ((dat ^ crc) & 0x01);
+                short aux = (short) (((dat & 0xFF) ^ (crc & 0xFF)) & 0x01);
                 if(aux == 1) crc ^= 0x18;
                 crc >>= 1;
                 crc |= (aux << 7);
                 dat >>= 1;
             }
         }
-        return crc;
+        return (byte)(crc + Byte.MIN_VALUE);
     }
 
 }

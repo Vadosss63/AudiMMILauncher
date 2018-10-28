@@ -19,6 +19,11 @@ public class MusicFiles
     // Мар с для доступа к по пути
     private HashMap<String, NodeDirectory> m_mapPaths = new HashMap<>();
 
+    public Vector<NodeDirectory> GetFolders()
+    {
+       return m_mapFolders;
+    }
+
     public MusicFiles(String rootPathFolder)
     {
         GetAllFiles(rootPathFolder, 0);
@@ -32,10 +37,9 @@ public class MusicFiles
        return m_mapFolders.get(childFolder.GetParentNumber() - 1);
     }
 
-
     public String GetPathTrack(int parentNumber, int number)
     {
-        if(m_mapTracks.containsKey(m_mapTracks.size()))
+        if(m_mapTracks.containsKey(parentNumber))
         {
             Vector<NodeDirectory> listTracks = m_mapTracks.get(parentNumber);
             if( number < listTracks.size())
@@ -45,6 +49,20 @@ public class MusicFiles
             }
         }
         return "";
+    }
+
+    public NodeDirectory GetTrack(int parentNumber, int number)
+    {
+        if(m_mapTracks.containsKey(parentNumber))
+        {
+            Vector<NodeDirectory> listTracks = m_mapTracks.get(parentNumber);
+            if( number < listTracks.size())
+            {
+                NodeDirectory track = listTracks.get(number);
+                return track;
+            }
+        }
+        return null;
     }
 
     public Vector<NodeDirectory> GetFolders(int parentFolder)

@@ -8,7 +8,6 @@ public class Track implements NodeDirectory
     private int parentNumber = -1;
     private String m_path;
 
-
     Track(String name)
     {
         this.name = name;
