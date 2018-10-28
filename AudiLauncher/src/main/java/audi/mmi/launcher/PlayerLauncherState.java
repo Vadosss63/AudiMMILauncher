@@ -68,7 +68,8 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
             Vector<NodeDirectory> tracks = m_musicFiles.GetTracks(folder.GetNumber());
             for(NodeDirectory track : tracks)
             {
-                encoderListTracks.AddTrackNumber(track.GetNumber());
+                /// TODO уточнить
+                encoderListTracks.AddTrackNumber(track.GetNumber() + 1);
                 encoderListTracks.AddName(folder.GetName());
             }
 
@@ -147,8 +148,7 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
                 {
                     toast = Toast.makeText(m_home, "Set Reader", Toast.LENGTH_SHORT);
                     toast.show();
-                }
-                else
+                } else
                 {
                     toast = Toast.makeText(m_home, "Reader " + m_uartPort.GetIsEnableRead(), Toast.LENGTH_SHORT);
                     toast.show();
@@ -181,11 +181,19 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
         }
         EncoderTrack encoderTrack = new EncoderTrack(dataTrack);
         int folder = encoderTrack.GetFolder();
-        int track = encoderTrack.GetTrackNumber();
+        int track = encoderTrack.GetTrackNumber() - 1;
 
         NodeDirectory trackNode = m_musicFiles.GetTrack(folder, track);
         if(trackNode != null)
         {
+            // Преходим в папку
+            if(m_musicFiles.GetParentFolder(trackNode) != null)
+            {
+                m_nodeDirectory = m_musicFiles.GetParentFolder(trackNode);
+
+                Play();
+            }
+            // запускаем трек
             m_nodeDirectory = trackNode;
             Play();
         }
