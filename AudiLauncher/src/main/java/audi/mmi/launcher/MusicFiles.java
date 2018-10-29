@@ -21,7 +21,7 @@ public class MusicFiles
 
     public Vector<NodeDirectory> GetFolders()
     {
-       return m_mapFolders;
+        return m_mapFolders;
     }
 
     public MusicFiles(String rootPathFolder)
@@ -31,10 +31,11 @@ public class MusicFiles
 
     public NodeDirectory GetParentFolder(NodeDirectory childFolder)
     {
-        if(childFolder.GetParentNumber() == 0)
-            return null;
+        if(childFolder == null) return null;
 
-       return m_mapFolders.get(childFolder.GetParentNumber() - 1);
+        if(childFolder.GetParentNumber() == 0) return null;
+
+        return m_mapFolders.get(childFolder.GetParentNumber() - 1);
     }
 
     public String GetPathTrack(int parentNumber, int number)
@@ -42,7 +43,7 @@ public class MusicFiles
         if(m_mapTracks.containsKey(parentNumber))
         {
             Vector<NodeDirectory> listTracks = m_mapTracks.get(parentNumber);
-            if( number < listTracks.size())
+            if(number < listTracks.size())
             {
                 NodeDirectory track = listTracks.get(number);
                 return track.GetPathDir();
@@ -56,7 +57,7 @@ public class MusicFiles
         if(m_mapTracks.containsKey(parentNumber))
         {
             Vector<NodeDirectory> listTracks = m_mapTracks.get(parentNumber);
-            if( number < listTracks.size())
+            if(number < listTracks.size() && number >= 0)
             {
                 NodeDirectory track = listTracks.get(number);
                 return track;
@@ -79,16 +80,14 @@ public class MusicFiles
         if(m_mapChaldeanFolders.containsKey(parentFolder))
             dataFales.addAll(m_mapChaldeanFolders.get(parentFolder));
 
-        if(m_mapTracks.containsKey(parentFolder))
-            dataFales.addAll(m_mapTracks.get(parentFolder));
+        if(m_mapTracks.containsKey(parentFolder)) dataFales.addAll(m_mapTracks.get(parentFolder));
 
         return dataFales;
     }
 
     public Vector<NodeDirectory> GetTracks(int parentFolder)
     {
-        if(m_mapTracks.containsKey(parentFolder))
-            return m_mapTracks.get(parentFolder);
+        if(m_mapTracks.containsKey(parentFolder)) return m_mapTracks.get(parentFolder);
 
         return new Vector<NodeDirectory>();
     }
@@ -96,13 +95,13 @@ public class MusicFiles
     public int GetParentNumber(String dirPath)
     {
         NodeDirectory node = m_mapPaths.get(dirPath);
-        return (node != null) ?  node.GetParentNumber() :  -1;
+        return (node != null) ? node.GetParentNumber() : -1;
     }
 
     public int GetNumber(String dirPath)
     {
         NodeDirectory node = m_mapPaths.get(dirPath);
-        return (node != null) ?  node.GetNumber() :  -1;
+        return (node != null) ? node.GetNumber() : -1;
     }
 
     public int GetNumberTracks(int number)
@@ -120,7 +119,7 @@ public class MusicFiles
     private void GetAllFiles(String dirPath, int parentIndex)
     {
         // Читаем дерикторию Получаем список файлов
-        File parentFile  = new File(dirPath);
+        File parentFile = new File(dirPath);
         File[] listFiles = new File(dirPath).listFiles();
 
         Arrays.sort(listFiles, fileComparator);
@@ -128,7 +127,7 @@ public class MusicFiles
         // Заполняем родительскую папку
         Folder parentFolder = new Folder(parentFile.getName());
         // устонавливаем родительскую папку
-        parentFolder.setParentNumber(m_newFolderNumber);
+        parentFolder.setParentNumber(parentIndex);
         m_newFolderNumber++;
         // устонавливаем номер папки
         parentFolder.setNumber(m_newFolderNumber);
@@ -150,14 +149,13 @@ public class MusicFiles
 
         Vector<NodeDirectory> mapTracks = new Vector<>();
         // формируем список папок и файлов
-        for (File file : listFiles)
+        for(File file : listFiles)
         {
             // Работаем только с доступными папками и файлами
-            if (file.isHidden() && !file.canRead())
-                continue;
+            if(file.isHidden() && !file.canRead()) continue;
 
             // проверяем файл дериктория???
-            if (file.isDirectory())
+            if(file.isDirectory())
             {
                 // спускаемся рекурсивно читая вложенное содержимое
                 GetAllFiles(file.getPath(), parentFolder.GetNumber());
@@ -165,7 +163,7 @@ public class MusicFiles
             }
             // проверяем типы файлов
             String filename = file.getName();
-            if (filename.endsWith(".mp3") || filename.endsWith(".wma") || filename.endsWith(".ogg"))
+            if(filename.endsWith(".mp3") || filename.endsWith(".wma") || filename.endsWith(".ogg"))
             {
                 Track track = new Track(filename);
                 track.setNumber(numberTracks);
@@ -185,9 +183,9 @@ public class MusicFiles
     // Компоратор для сортировки дерикторий музыкальных треков
     private Comparator<? super File> fileComparator = (Comparator<File>) (file1, file2)->{
 
-        if (file1.isDirectory() && !file2.isDirectory()) return -1;
+        if(file1.isDirectory() && !file2.isDirectory()) return -1;
 
-        if (file2.isDirectory() && !file1.isDirectory()) return 1;
+        if(file2.isDirectory() && !file1.isDirectory()) return 1;
 
         String pathLowerCaseFile1 = file1.getName().toLowerCase();
         String pathLowerCaseFile2 = file2.getName().toLowerCase();

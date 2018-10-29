@@ -14,20 +14,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
 import java.util.Vector;
 
 public class PlayerLauncherState extends LauncherState implements AdapterView.OnItemClickListener, MediaPlayer.OnCompletionListener
 {
 
-    private UARTPort m_uartPort = new UARTPort();
+    private int sendTracksInfo = 0;
 
+    private UARTPort m_uartPort = new UARTPort();
     private Handler m_handler;
     private Runnable m_runnable;
     // текущий трек
     private String m_dirAudioTrack;
-    // Текущий выбранный файл
-    private NodeDirectory m_nodeDirectory;
+    // Текущий выбранный трек
+    private NodeDirectory m_currentTrack;
+    // Текущая деректория показа
+    private NodeDirectory m_currentDirectory;
     //  плаер для воспроизведения
     private MPlayer m_MPlayer;
     // дериктория для воспроизведения
@@ -48,11 +50,11 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
         CreateAdapter();
         CreateUARTPort();
 
-        if(m_uartPort.GetIsUartConfigured())
-        {
-            SendInfoFoldersToComPort();
-            SendInfoTracksToComPort();
-        }
+//        if(m_uartPort.GetIsUartConfigured())
+//        {
+//            SendInfoFoldersToComPort();
+//            SendInfoTracksToComPort();
+//        }
     }
 
     private void SendInfoTracksToComPort()
@@ -62,15 +64,18 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
         Vector<NodeDirectory> folders = m_musicFiles.GetFolders();
 
         EncoderListTracks encoderListTracks = new EncoderListTracks();
-        for(NodeDirectory folder : folders)
+        ///TODO testUart
+        //        for(NodeDirectory folder : folders)
         {
+
+            NodeDirectory folder = folders.get(sendTracksInfo % folders.size());
             encoderListTracks.AddHeader(folder.GetNumber());
             Vector<NodeDirectory> tracks = m_musicFiles.GetTracks(folder.GetNumber());
             for(NodeDirectory track : tracks)
             {
                 /// TODO уточнить
                 encoderListTracks.AddTrackNumber(track.GetNumber() + 1);
-                encoderListTracks.AddName(folder.GetName());
+                encoderListTracks.AddName(track.GetName());
             }
 
             encoderListTracks.AddEnd();
@@ -82,15 +87,10 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
             isSend = m_uartPort.WriteData(headerData.GetDataByte());
         }
 
-        Toast toast;
-        if(isSend)
-        {
-            toast = Toast.makeText(m_home, "Send", Toast.LENGTH_SHORT);
-        } else
-        {
-            toast = Toast.makeText(m_home, "No Send", Toast.LENGTH_SHORT);
-        }
+        String msg = isSend ? "Send-" + sendTracksInfo : "No Send";
+        Toast toast = Toast.makeText(m_home, msg, Toast.LENGTH_SHORT);
         toast.show();
+        sendTracksInfo++;
     }
 
     private void SendInfoFoldersToComPort()
@@ -110,14 +110,8 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
         EncoderMainHeader headerData = new EncoderMainHeader(encoderFolders.GetVectorByte());
         headerData.AddMainHeader((byte) 0x02);
 
-        Toast toast;
-        if(m_uartPort.WriteData(headerData.GetDataByte()))
-        {
-            toast = Toast.makeText(m_home, "Send", Toast.LENGTH_SHORT);
-        } else
-        {
-            toast = Toast.makeText(m_home, "No Send", Toast.LENGTH_SHORT);
-        }
+        String msg = m_uartPort.WriteData(headerData.GetDataByte()) ? "Send" : "No Send";
+        Toast toast = Toast.makeText(m_home, msg, Toast.LENGTH_SHORT);
         toast.show();
     }
 
@@ -130,41 +124,30 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
     private void CreateUARTPort()
     {
         ///TODO для отладки
-        Toast toast;
+        String msg = null;
         if(m_uartPort.ConnectToManager(m_home))
         {
             m_uartPort.Connect();
-
             if(m_uartPort.GetIsUartConfigured())
             {
-                toast = Toast.makeText(m_home, m_uartPort.GetTextLog(), Toast.LENGTH_SHORT);
-                toast.show();
                 m_uartPort.SetReadRunnable(()->{
                     ReadCommand();
                 });
-                m_uartPort.ReadData();
                 // Запускаем прослушку команд управления
-                if(m_uartPort.ReadData())
-                {
-                    toast = Toast.makeText(m_home, "Set Reader", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else
-                {
-                    toast = Toast.makeText(m_home, "Reader " + m_uartPort.GetIsEnableRead(), Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-
+                m_uartPort.ReadData();
+                msg = m_uartPort.GetTextLog();
 
             } else
             {
-                toast = Toast.makeText(m_home, "No conf", Toast.LENGTH_SHORT);
-                toast.show();
+                msg = "No conf";
             }
         } else
         {
-            toast = Toast.makeText(m_home, "Error", Toast.LENGTH_LONG);
-            toast.show();
+            msg = "Error";
         }
+
+        Toast toast = Toast.makeText(m_home, msg, Toast.LENGTH_LONG);
+        toast.show();
     }
 
     // Обработка пришедших команд с порта
@@ -172,31 +155,37 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
     {
         byte[] data = m_uartPort.GetReadDataByte();
         Toast toast;
-        toast = Toast.makeText(m_home, "Recive_" + data.length, Toast.LENGTH_LONG);
+        toast = Toast.makeText(m_home, "Command  " + data[2], Toast.LENGTH_LONG);
         toast.show();
-        Vector<Byte> dataTrack = new Vector<Byte>();
-        for(int i = 5; i < data.length - 1; i++)
-        {
-            dataTrack.add(data[i]);
-        }
-        EncoderTrack encoderTrack = new EncoderTrack(dataTrack);
-        int folder = encoderTrack.GetFolder();
-        int track = encoderTrack.GetTrackNumber() - 1;
 
-        NodeDirectory trackNode = m_musicFiles.GetTrack(folder, track);
-        if(trackNode != null)
+        /// TODO исправить прием команд
+        if(data[2] == (byte) 0x05)
         {
-            // Преходим в папку
-            if(m_musicFiles.GetParentFolder(trackNode) != null)
+            Vector<Byte> dataTrack = new Vector<>();
+
+            for(int i = 5; i < data.length - 1; i++)
             {
-                m_nodeDirectory = m_musicFiles.GetParentFolder(trackNode);
-
-                Play();
+                dataTrack.add(data[i]);
             }
-            // запускаем трек
-            m_nodeDirectory = trackNode;
+            EncoderTrack encoderTrack = new EncoderTrack(dataTrack);
+            int folder = encoderTrack.GetFolder();
+            int track = encoderTrack.GetTrackNumber() - 1;
+
+            SelectTrack(folder, track);
+        } else if(data[2] == (byte) 0x06)
+        {
             Play();
+        } else if(data[2] == (byte) 0x07)
+        {
+            Pause();
+        } else if(data[2] == (byte) 0x08)
+        {
+            PlayPrevious();
+        } else if(data[2] == (byte) 0x09)
+        {
+            PlayNext();
         }
+
     }
 
     private void CreateAdapter()
@@ -256,6 +245,11 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
         SetSelectedButton(R.id.musicPlayer, false);
         m_home.StartAnimation();
         m_home.ChangeState(HomeLauncherState.Instance(m_home));
+
+        if(m_currentTrack == null || m_currentDirectory == null) return;
+
+        if(m_currentTrack.GetParentNumber() != m_currentDirectory.GetNumber())
+            BackToParentFolder(m_currentTrack);
     }
 
     @Override
@@ -266,11 +260,18 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
     @Override
     public void PushLTButton()
     {
+        ///TODO test UART
+        if(m_uartPort.GetIsUartConfigured()) SendInfoFoldersToComPort();
     }
 
     @Override
     public void PushRTButton()
     {
+        ///TODO test UART
+        if(m_uartPort.GetIsUartConfigured())
+        {
+            SendInfoTracksToComPort();
+        }
     }
 
     @Override
@@ -287,12 +288,7 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
     @Override
     public void OnBackPressed()
     {
-        NodeDirectory nodeDirectory = m_musicFiles.GetParentFolder(m_nodeDirectory);
-        if(nodeDirectory != null)
-        {
-            m_nodeDirectory = nodeDirectory;
-            Play();
-        }
+        BackToParentFolder(m_currentDirectory);
     }
 
     private void CreateMusicFiles()
@@ -322,61 +318,109 @@ public class PlayerLauncherState extends LauncherState implements AdapterView.On
         m_handler.post(m_runnable);
     }
 
-    // Воспроизведение песни
+    private void OpenDirectory()
+    {
+        m_adapterPlayList.clear();
+        Vector<NodeDirectory> files = new Vector<>();
+        NodeDirectory back = m_musicFiles.GetParentFolder(m_currentDirectory);
+        if(back != null)
+        {
+            back.SetName("вверх");
+            files.add(back);
+        }
+        files.addAll(m_musicFiles.GetAllFiles(m_currentDirectory.GetNumber()));
+        m_adapterPlayList.addAll(files);
+    }
+
     private void Play()
     {
+        m_MPlayer.Play();
+    }
+
+    private void Pause()
+    {
+        m_MPlayer.Pause();
+    }
+
+    private void PlayNext()
+    {
+        if(m_currentTrack != null)
+        {
+            int indexTrack = m_currentTrack.GetNumber() + 1;
+            SelectTrack(m_currentTrack.GetParentNumber(), indexTrack);
+        }
+    }
+
+    private void PlayPrevious()
+    {
+        if(m_currentTrack != null)
+        {
+            int indexTrack = m_currentTrack.GetNumber() - 1;
+            SelectTrack(m_currentTrack.GetParentNumber(), indexTrack);
+        }
+    }
+
+    private void PlayMusic()
+    {
         ScrollToSelectTrack();
-        // пока у нас есть треки мы их воспроизводим
-        if(m_nodeDirectory.IsFolder())
+        m_dirAudioTrack = m_currentTrack.GetPathDir();
+        m_MPlayer.StartPlayer(m_dirAudioTrack);
+    }
+
+    private void SelectTrack(int folder, int track)
+    {
+        NodeDirectory trackNode = m_musicFiles.GetTrack(folder, track);
+
+        if(trackNode != null)
         {
-            m_adapterPlayList.clear();
-            Vector<NodeDirectory> files = new Vector<>();
-            NodeDirectory back = m_musicFiles.GetParentFolder(m_nodeDirectory);
-            if(back != null)
-            {
-                back.SetName("вверх");
-                files.add(back);
-            }
-            files.addAll(m_musicFiles.GetAllFiles(m_nodeDirectory.GetNumber()));
-            m_adapterPlayList.addAll(files);
-        } else
-        {
-            m_dirAudioTrack = m_nodeDirectory.GetPathDir();
+            BackToParentFolder(trackNode);
+            // запускаем трек
+            m_currentTrack = trackNode;
             PlayMusic();
         }
+    }
 
+    private void BackToParentFolder(NodeDirectory trackNode)
+    {
+        NodeDirectory nodeDirectory = m_musicFiles.GetParentFolder(trackNode);
+        // Преходим в папку
+        if(nodeDirectory == null) return;
+
+        if(nodeDirectory == m_currentDirectory) return;
+
+        m_currentDirectory = nodeDirectory;
+        OpenDirectory();
     }
 
     /// TODO сделать скрол при возвращении
     private void ScrollToSelectTrack()
     {
-        int scrollPos = m_adapterPlayList.getPosition(m_nodeDirectory);
-        m_mainView.smoothScrollToPosition(scrollPos, 4);
+        int scrollPos = m_adapterPlayList.getPosition(m_currentTrack);
+        m_mainView.smoothScrollToPosition(scrollPos);
         m_adapterPlayList.notifyDataSetChanged();
-    }
-
-    private void PlayMusic()
-    {
-        m_MPlayer.StartPlayer(m_dirAudioTrack);
     }
 
     // выполняетя врезультате окончания песни
     @Override
     public void onCompletion(MediaPlayer mp)
     {
-        int indexTrack = m_adapterPlayList.getPosition(m_nodeDirectory) + 1;
-        if(indexTrack < m_adapterPlayList.getCount())
-        {
-            m_nodeDirectory = m_adapterPlayList.getItem(indexTrack);
-            Play();
-        }
+        PlayNext();
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {   // обработка нажатий на элементах списка
-        m_nodeDirectory = (NodeDirectory) (parent.getItemAtPosition(position));
-        Play();
+        NodeDirectory nodeDirectory = (NodeDirectory) (parent.getItemAtPosition(position));
+        // пока у нас есть треки мы их воспроизводим
+        if(nodeDirectory.IsFolder())
+        {
+            m_currentDirectory = nodeDirectory;
+            OpenDirectory();
+        } else
+        {
+            m_currentTrack = nodeDirectory;
+            PlayMusic();
+        }
     }
 
 }

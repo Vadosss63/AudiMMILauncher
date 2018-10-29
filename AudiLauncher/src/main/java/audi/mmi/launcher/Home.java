@@ -1,6 +1,5 @@
 package audi.mmi.launcher;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -76,21 +75,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener
     {
         m_launcherState.OnBackPressed();
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-//    {
-//        if (requestCode != REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE)
-//            return;
-//
-//        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-//            StartMusic();
-//        else
-//        {
-//            Toast toast = Toast.makeText(getApplicationContext(),"В доступе отказано!", Toast.LENGTH_SHORT);
-//            toast.show();
-//        }
-//    }
 
     private void SetDecorView()
     {

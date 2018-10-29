@@ -46,7 +46,7 @@ public class Track implements NodeDirectory
 
     @Override
     public int GetNumber() {
-        return -1;
+        return number;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Track implements NodeDirectory
 
     @Override
     public int GetNumberTracks() {
-        return number;
+        return -1;
     }
 
     @Override

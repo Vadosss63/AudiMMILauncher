@@ -14,14 +14,14 @@ public class EncoderTrack
     public int GetFolder()
     {
         int numberFolder;
-        numberFolder = convertToInt(2);
+        numberFolder = convertToInt(0);
         return numberFolder;
     }
 
     public int GetTrackNumber()
     {
         int trackNumber = 0;
-        trackNumber = convertToInt(4);
+        trackNumber = convertToInt(2);
         return trackNumber;
     }
 

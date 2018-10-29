@@ -3,6 +3,7 @@ package audi.mmi.launcher;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+
 import java.io.IOException;
 import java.sql.Time;
 
@@ -16,7 +17,8 @@ public class MPlayer
     public String GetCurrentTimePlay()
     {
         String timeString = "00:00";
-        if(m_mediaPlayer != null) {
+        if(m_mediaPlayer != null)
+        {
             Time time = new Time(m_mediaPlayer.getCurrentPosition());
             timeString = String.format("%02d:%02d", time.getMinutes(), time.getSeconds());
         }
@@ -42,12 +44,13 @@ public class MPlayer
 
     private void SetupPlayer(String audio)
     {
-        try {
+        try
+        {
             m_mediaPlayer.setDataSource(audio);
             m_mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             m_mediaPlayer.prepare();
-        }
-        catch (IOException e)
+
+        } catch(IOException e)
         {
             e.printStackTrace();
         }
@@ -55,10 +58,19 @@ public class MPlayer
 
     private void CreatePlayer()
     {
-        if (m_mediaPlayer != null)
-            m_mediaPlayer.release();
+        if(m_mediaPlayer != null) m_mediaPlayer.release();
 
         m_mediaPlayer = new MediaPlayer();
+    }
+
+    public void Play()
+    {
+        if(m_mediaPlayer != null) if(!m_mediaPlayer.isPlaying()) m_mediaPlayer.start();
+    }
+
+    public void Pause()
+    {
+        if(m_mediaPlayer != null) if(m_mediaPlayer.isPlaying()) m_mediaPlayer.pause();
     }
 
 }

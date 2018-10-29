@@ -68,6 +68,7 @@ public class UARTPort
     public void SetReadRunnable(Runnable runnable)
     {
         this.m_readRunnable = runnable;
+        ReadData();
     }
 
     public Boolean ConnectToManager(Context context)
