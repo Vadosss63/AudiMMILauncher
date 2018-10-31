@@ -18,6 +18,7 @@ public class EncoderFolders
     {
         // стартовый байт для названия папки
         m_dataByte.add((byte) 0x02);
+        if(name.length() > 20) name = name.substring(0, 20);
 
         for(byte byteName : name.getBytes())
             m_dataByte.add(byteName);
@@ -45,11 +46,11 @@ public class EncoderFolders
 
     public void AddEnd()
     {
-        m_dataByte.add((byte)0x01);
-        m_dataByte.add((byte)0x00);
+        m_dataByte.add((byte) 0x01);
+        m_dataByte.add((byte) 0x00);
 
-        m_dataByte.add((byte)0xFF);
-        m_dataByte.add((byte)0xFF);
+        m_dataByte.add((byte) 0xFF);
+        m_dataByte.add((byte) 0xFF);
 
         m_dataByte.add((byte) 0x00);
         m_dataByte.add((byte) 0x00);

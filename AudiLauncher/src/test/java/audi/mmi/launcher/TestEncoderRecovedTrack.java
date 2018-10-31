@@ -17,7 +17,7 @@ public class TestEncoderRecovedTrack
     public void setUp() throws Exception
     {
         Vector<Byte> dataByte = new Vector<Byte>();
-        Byte[] data = {0x00, 0x00, 0x00, 0x07, 0x01, 0x68, 0x00, 0x00, 0x00, 0x00};
+        Byte[] data = {0x00, 0x07, 0x01, 0x68, 0x00, 0x00, 0x00, 0x00};
         dataByte.addAll(Arrays.asList(data));
         encoderTrack = new EncoderTrack(dataByte);
     }

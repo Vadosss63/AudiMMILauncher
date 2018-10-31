@@ -37,7 +37,7 @@ public class TestEncoderListTracks
     @Test
     public void AddName() throws Exception
     {
-        encoderListTracks.AddName("Track 1");
+        encoderListTracks.AddName("Track 12657468747897508608909245423456787654");
 
         byte[] dataName = new byte[]{
                 0x02,

@@ -31,6 +31,8 @@ public class EncoderListTracks
         // стартовый байт для названия папки
         m_dataByte.add((byte) 0x02);
 
+        if(name.length() > 20) name = name.substring(0, 20);
+
         for(byte byteName : name.getBytes())
             m_dataByte.add(byteName);
 
