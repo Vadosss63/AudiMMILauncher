@@ -73,4 +73,14 @@ public class MPlayer
         if(m_mediaPlayer != null) if(m_mediaPlayer.isPlaying()) m_mediaPlayer.pause();
     }
 
+    public void SetOnTimedTextListener(MediaPlayer.OnTimedTextListener listener)
+    {
+        if(m_mediaPlayer != null) m_mediaPlayer.setOnTimedTextListener(listener);
+    }
+
+
+    public boolean IsPlay()
+    {
+        return m_mediaPlayer!= null ? m_mediaPlayer.isPlaying(): false;
+    }
 }

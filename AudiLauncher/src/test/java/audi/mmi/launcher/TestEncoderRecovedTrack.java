@@ -17,7 +17,7 @@ public class TestEncoderRecovedTrack
     public void setUp() throws Exception
     {
         Vector<Byte> dataByte = new Vector<Byte>();
-        Byte[] data = {0x00, 0x07, 0x01, 0x68, 0x00, 0x00, 0x00, 0x00};
+        Byte[] data = {0x00, 0x07, 0x00, (byte)0x81, 0x00, 0x00, 0x00, 0x00};
         dataByte.addAll(Arrays.asList(data));
         encoderTrack = new EncoderTrack(dataByte);
     }
@@ -32,7 +32,7 @@ public class TestEncoderRecovedTrack
     public void GetTrackNumberTest() throws Exception
     {
         int trackNumber = encoderTrack.GetTrackNumber();
-        assertEquals(360,trackNumber);
+        assertEquals(129,trackNumber);
     }
 
 }

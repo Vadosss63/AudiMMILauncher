@@ -27,8 +27,7 @@ public class EncoderTrack
 
     private int convertToInt(int startByte)
     {
-        int val = m_dataByte.get(startByte + 1);
-        val |= m_dataByte.get(startByte) << 8;
+        int val = (m_dataByte.get(startByte) << 8) & 0xff00 | (m_dataByte.get(startByte + 1)) & 0x00ff;
         return val;
     }
 

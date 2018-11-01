@@ -18,8 +18,8 @@ public class TestEncoderTimeTrack
     @Test
     public void AddHeaderTest() throws Exception
     {
-        encoderTimeTrack.AddHeader(300);
-        byte[] dataHeader = new byte[]{0x00, 0x00, 0x01, (byte) 0x2C};
+        encoderTimeTrack.AddHeader(129);
+        byte[] dataHeader = new byte[]{0x00, 0x00, 0x00, (byte) 0x81};
         byte[] actualDataHeader = encoderTimeTrack.GetDataByte();
         assertArrayEquals(dataHeader, actualDataHeader);
     }
